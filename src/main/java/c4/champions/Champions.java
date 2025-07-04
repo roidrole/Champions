@@ -64,14 +64,14 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(   modid = Champions.MODID,
         name = Champions.NAME,
-        version = "@VERSION@",
+        version = Tags.VERSION,
         dependencies = "required-after:forge@[14.23.5.2768,)",
         acceptedMinecraftVersions = "[1.12, 1.13)",
         certificateFingerprint = "@FINGERPRINT@")
 public class Champions
 {
-    public static final String MODID = "champions";
-    public static final String NAME = "Champions";
+    public static final String MODID = Tags.MOD_ID;
+    public static final String NAME = Tags.MOD_NAME;
 
     //Integrations
     public static boolean isGameStagesLoaded = false;
