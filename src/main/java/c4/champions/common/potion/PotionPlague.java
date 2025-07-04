@@ -20,17 +20,9 @@
 package c4.champions.common.potion;
 
 import c4.champions.Champions;
-import c4.champions.common.affix.Affixes;
-import c4.champions.common.affix.affix.AffixPlagued;
-import c4.champions.common.capability.CapabilityChampionship;
-import c4.champions.common.capability.IChampionship;
 import c4.champions.common.config.ConfigHandler;
-import c4.champions.common.util.ChampionHelper;
-import java.util.List;
-import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -39,6 +31,8 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 public class PotionPlague extends Potion {
 

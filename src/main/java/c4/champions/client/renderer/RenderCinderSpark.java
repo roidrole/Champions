@@ -2,11 +2,12 @@ package c4.champions.client.renderer;
 
 import c4.champions.Champions;
 import c4.champions.common.entity.EntityCinderSpark;
-import javax.annotation.Nonnull;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
+
+import javax.annotation.Nonnull;
 
 public class RenderCinderSpark extends AbstractRenderSpark<EntityCinderSpark> {
 

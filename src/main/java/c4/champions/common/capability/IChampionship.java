@@ -22,9 +22,10 @@ package c4.champions.common.capability;
 import c4.champions.common.rank.Rank;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import net.minecraft.nbt.NBTTagCompound;
+
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.nbt.NBTTagCompound;
 
 public interface IChampionship {
 

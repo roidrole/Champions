@@ -24,8 +24,6 @@ import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
 import c4.champions.common.config.ConfigHandler;
-import java.lang.reflect.Field;
-import java.util.Iterator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -41,6 +39,9 @@ import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.Level;
+
+import java.lang.reflect.Field;
+import java.util.Iterator;
 
 public class AffixMolten extends AffixBase {
 

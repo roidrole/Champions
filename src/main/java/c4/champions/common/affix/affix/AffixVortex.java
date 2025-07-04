@@ -24,10 +24,11 @@ import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.affix.core.AffixNBT;
 import c4.champions.common.capability.IChampionship;
 import c4.champions.common.config.ConfigHandler;
-import javax.vecmath.Vector3d;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+
+import javax.vecmath.Vector3d;
 
 public class AffixVortex extends AffixBase {
 

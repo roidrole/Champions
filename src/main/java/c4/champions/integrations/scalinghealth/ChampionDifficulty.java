@@ -20,6 +20,7 @@
 package c4.champions.integrations.scalinghealth;
 
 import c4.champions.common.config.ConfigHandler;
+
 import java.util.Map;
 import java.util.TreeMap;
 
