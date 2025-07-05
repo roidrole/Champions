@@ -89,7 +89,14 @@ public class ChampionHelper {
             }
             finalTier = curated.getSecond();
             firstTier = curated.getFirst();
+        } else {
+            //We want always champions to bypass beacon restriction
+            if(nearActiveBeacon(entityLivingIn)){
+                return RankManager.getEmptyRank();
+            }
         }
+
+
 
         for (Integer tier : ranks.keySet().tailSet(firstTier, true).headSet(finalTier)) {
             Rank thisRank = ranks.get(tier);
