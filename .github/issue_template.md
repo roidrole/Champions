@@ -18,4 +18,6 @@ If you are making a suggestion, delete this template.
 3.
 ...
 
-Crash Log: Please use a paste site like [gist](https://gist.github.com/).
+Crash Log: Please use a paste site like [mclo.gs](https://mclo.gs/).
+
+Latest.log: Please use a paste site like [mclo.gs](https://mclo.gs/).
