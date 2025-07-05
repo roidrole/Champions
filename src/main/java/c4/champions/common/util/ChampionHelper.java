@@ -28,6 +28,7 @@ import c4.champions.common.config.ConfigHandler;
 import c4.champions.common.potion.PotionPlague;
 import c4.champions.common.rank.Rank;
 import c4.champions.common.rank.RankManager;
+import c4.champions.integrations.crafttweaker.CTChampion;
 import c4.champions.integrations.gamestages.ChampionStages;
 import c4.champions.integrations.scalinghealth.ChampionDifficulty;
 import com.google.common.collect.ImmutableSortedMap;
@@ -71,6 +72,13 @@ public class ChampionHelper {
 
     public static Rank generateRank(final EntityLiving entityLivingIn) {
         ImmutableSortedMap<Integer, Rank> ranks = RankManager.getRanks();
+        if(CTChampion.rankAttributor != null){
+            int outputTier = CTChampion.rankAttributor.apply(entityLivingIn);
+            if (outputTier == 0) {
+                return RankManager.getEmptyRank();
+            }
+            return ranks.get(outputTier);
+        }
         int firstTier = ranks.firstKey();
         int finalTier = ranks.lastKey();
         int outputTier = 0;
