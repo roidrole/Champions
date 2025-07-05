@@ -40,10 +40,10 @@ import java.util.TreeMap;
 public class RankManager {
 
     private static final Rank[] DEFAULT_RANKS = new Rank[] {
-            new Rank(1, 1, 1, 0.05f, 0xffff00, new String[]{}),
-            new Rank(2, 2, 4, 0.2f, 0xff9900, new String[]{}),
-            new Rank(3, 3, 9, 0.2f, 0x66ffff, new String[]{}),
-            new Rank(4, 4, 16, 0.2f, 0xcc33ff, new String[]{})
+            new Rank(1, 1, 1, 0.05f, 0xffff00, new int[]{}, false, new String[]{}),
+            new Rank(2, 2, 4, 0.2f, 0xff9900, new int[]{}, false, new String[]{}),
+            new Rank(3, 3, 9, 0.2f, 0x66ffff, new int[]{}, false, new String[]{}),
+            new Rank(4, 4, 16, 0.2f, 0xcc33ff, new int[]{}, false, new String[]{})
     };
     private static final Rank EMPTY_RANK = new Rank();
 

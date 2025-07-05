@@ -34,18 +34,34 @@ public class Rank {
     private final int affixes;
     private final int growthFactor;
     private final float chance;
+    private final int[] dimensions;
+    private final boolean dimensionsIsWhitelist;
     private final String[] potions;
 
     public Rank() {
-        this(0, 0, 0, 0, 0, new String[]{});
+        this(0, 0, 0, 0, 0, new int[]{}, false, new String[]{});
     }
 
+    @Deprecated
     public Rank(int tier, int affixes, int growthFactor, float chance, int color, String[] potions) {
         this.tier = tier;
         this.affixes = affixes;
         this.growthFactor = growthFactor;
         this.chance = chance;
         this.color = color;
+        this.dimensions = new int[0];
+        this.dimensionsIsWhitelist = false;
+        this.potions = potions;
+    }
+
+    public Rank(int tier, int affixes, int growthFactor, float chance, int color, int[] dimensions, boolean dimensionsIsWhitelist, String[] potions) {
+        this.tier = tier;
+        this.affixes = affixes;
+        this.growthFactor = growthFactor;
+        this.chance = chance;
+        this.color = color;
+        this.dimensions = dimensions;
+        this.dimensionsIsWhitelist = dimensionsIsWhitelist;
         this.potions = potions;
     }
 
@@ -80,6 +96,14 @@ public class Rank {
         return chance;
     }
 
+    public int[] getDimensions(){
+        return dimensions;
+    }
+
+    public boolean isDimensionsWhitelist() {
+        return dimensionsIsWhitelist;
+    }
+
     public String[] getPotions() {
         return potions;
     }
@@ -92,6 +116,7 @@ public class Rank {
         applyGrowth(entityLivingBase, SharedMonsterAttributes.ARMOR_TOUGHNESS, ConfigHandler.growth.armorToughness, 0);
         applyGrowth(entityLivingBase, SharedMonsterAttributes.KNOCKBACK_RESISTANCE, ConfigHandler.growth.knockbackResist, 0);
     }
+
 
     private void applyGrowth(EntityLivingBase entityLivingBase, IAttribute attribute, double amount,
                              int operation) {

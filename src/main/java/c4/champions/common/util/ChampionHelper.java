@@ -49,6 +49,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.silentchaos512.scalinghealth.api.ScalingHealthAPI;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Level;
 
 import java.lang.reflect.Field;
@@ -70,71 +71,49 @@ public class ChampionHelper {
 
     public static Rank generateRank(final EntityLiving entityLivingIn) {
         ImmutableSortedMap<Integer, Rank> ranks = RankManager.getRanks();
-        int finalTier = 0;
         int firstTier = ranks.firstKey();
-        float chance = ranks.get(firstTier).getChance();
+        int finalTier = ranks.lastKey();
+        int outputTier = 0;
+        float chance;
 
-        if (Champions.isScalingHealthLoaded) {
-            double modifier = ChampionDifficulty.getSpawnModifier(firstTier);
-            double difficulty = ScalingHealthAPI.getAreaDifficulty(entityLivingIn.world, entityLivingIn.getPosition());
-            chance += modifier * difficulty;
+        //Check for mobs which are always champions
+        Tuple<Integer, Integer> curated = champions.get(EntityList.getKey(entityLivingIn));
+        if (curated != null){
+            if(curated.getFirst() > 0 && curated.getSecond() == 0){
+                return ranks.get(curated.getFirst());
+            }
+            finalTier = curated.getSecond();
+            firstTier = curated.getFirst();
         }
 
-        ResourceLocation entityKey = EntityList.getKey(entityLivingIn);
-        Tuple<Integer, Integer> curated = champions.get(entityKey);
+        for (Integer tier : ranks.keySet().tailSet(firstTier, true).headSet(finalTier)) {
+            Rank thisRank = ranks.get(tier);
+            if(thisRank.isDimensionsWhitelist() != ArrayUtils.contains(thisRank.getDimensions(), entityLivingIn.dimension)){
+                continue; //Break if still decrease chance
+            }
+            if (Champions.isGameStagesLoaded && !ChampionStages.isValidTier(tier, entityLivingIn)) {
+                break;
+            }
 
-        if (curated != null) {
+            chance = thisRank.getChance();
+            if (Champions.isScalingHealthLoaded) {
+                double modifier = ChampionDifficulty.getSpawnModifier(tier);
+                double difficulty = ScalingHealthAPI.getAreaDifficulty(entityLivingIn.world, entityLivingIn.getPosition());
+                chance += (float) (modifier * difficulty);
+            }
 
-            if (curated.getFirst() > 0) {
-                finalTier = curated.getFirst();
-
-                if (curated.getSecond() == 0) {
-                    return ranks.get(finalTier);
-                }
+            if (rand.nextFloat() < chance) {
+                outputTier = tier;
             } else {
-                finalTier = firstTier;
-            }
-        } else if (rand.nextFloat() < chance) {
-
-            if ((Champions.isGameStagesLoaded && !ChampionStages.isValidTier(ranks.firstKey(), entityLivingIn)) ||
-                    nearActiveBeacon(entityLivingIn)) {
-                return RankManager.getEmptyRank();
-            }
-            finalTier = firstTier;
-        }
-
-        if (finalTier > 0) {
-            Set<Integer> check = ranks.keySet().tailSet(finalTier, false);
-
-            for (Integer tier : check) {
-                chance = ranks.get(tier).getChance();
-
-                if (Champions.isScalingHealthLoaded) {
-                    double modifier = ChampionDifficulty.getSpawnModifier(tier);
-                    double difficulty = ScalingHealthAPI.getAreaDifficulty(entityLivingIn.world, entityLivingIn.getPosition());
-                    chance += modifier * difficulty;
-                }
-
-                if (rand.nextFloat() < chance) {
-
-                    if (Champions.isGameStagesLoaded && !ChampionStages.isValidTier(tier, entityLivingIn)) {
-                        break;
-                    }
-                    finalTier = tier;
-                } else {
-                    break;
-                }
+                break;
             }
         }
 
-        if (finalTier == 0) {
+
+        if (outputTier == 0) {
             return RankManager.getEmptyRank();
-        } else {
-            if (curated != null && curated.getSecond() > 0) {
-                finalTier = Math.min(finalTier, curated.getSecond());
-            }
-            return ranks.get(finalTier);
         }
+        return ranks.get(outputTier);
     }
 
     public static String generateRandomName() {
