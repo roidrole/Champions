@@ -5,7 +5,6 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.entity.IEntityLiving;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.entity.EntityLiving;
-import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -17,21 +16,23 @@ public class CTChampion {
     public static Function<EntityLiving, Integer> rankAttributor = null;
 
     @ZenMethod
-    public static void addStage(String stage, String entity, @Optional Integer dimension) {
-        if(dimension == null){
-            ChampionStages.addStage(entity, stage);
-        } else {
-            ChampionStages.addStage(entity, stage, dimension);
-        }
+    public static void addStage(String stage, String entity) {
+        ChampionStages.addStage(entity, stage);
     }
 
     @ZenMethod
-    public static void addStage(String stage, int tier, @Optional Integer dimension) {
-        if(dimension == null){
-            ChampionStages.addTierStage(tier, stage);
-        } else {
-            ChampionStages.addTierStage(tier, stage, dimension);
-        }
+    public static void addStage(String stage, String entity, int dimension) {
+        ChampionStages.addStage(entity, stage, dimension);
+    }
+
+    @ZenMethod
+    public static void addStage(String stage, int tier) {
+        ChampionStages.addTierStage(tier, stage);
+    }
+
+    @ZenMethod
+    public static void addStage(String stage, int tier, int dimension) {
+        ChampionStages.addTierStage(tier, stage, dimension);
     }
 
     @ZenMethod
