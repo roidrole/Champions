@@ -67,8 +67,8 @@ dependencies {
     // }
 
     implementation('curse.maven:bookshelf-228525:2836960')
-    implementation('curse.maven:game-stages-268655:2951840')
-    implementation('curse.maven:crafttweaker-239197:6669824')
+    compileOnly('curse.maven:game-stages-268655:2951840')
+    compileOnly('curse.maven:crafttweaker-239197:6669824')
     implementation('curse.maven:silent-lib-242998:2851111')
     implementation('curse.maven:scaling-health-248027:2816920')
     implementation('mezz:jei:4.25.5')
