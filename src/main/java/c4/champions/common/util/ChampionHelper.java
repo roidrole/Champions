@@ -254,9 +254,6 @@ public class ChampionHelper {
         return rank != null && rank.getTier() > 0;
     }
 
-    private static final Field IS_COMPLETE = ReflectionHelper.findField(TileEntityBeacon.class,
-            "isComplete", "field_146015_k");
-
     private static boolean nearActiveBeacon(final EntityLiving entityLivingIn) {
         int range = ConfigHandler.beaconRange;
 
@@ -267,17 +264,9 @@ public class ChampionHelper {
         for (TileEntity te : entityLivingIn.world.tickableTileEntities) {
             BlockPos pos = te.getPos();
 
-            if (Math.sqrt(entityLivingIn.getDistanceSq(pos)) <= range && te instanceof TileEntityBeacon) {
-                TileEntityBeacon beacon = (TileEntityBeacon)te;
-                boolean flag = false;
+            if (entityLivingIn.getDistanceSq(pos) <= range * range && te instanceof TileEntityBeacon) {
 
-                try {
-                    flag = IS_COMPLETE.getBoolean(beacon);
-                } catch (IllegalAccessException e) {
-                    Champions.logger.log(Level.ERROR, "Error reading isComplete from beacon!");
-                }
-
-                if (flag) {
+                if (((TileEntityBeacon)te).isComplete) {
                     return true;
                 }
             }
@@ -318,114 +307,102 @@ public class ChampionHelper {
             PotionPlague.setInfectionPotion(potion);
         }
 
-        if (ConfigHandler.dimensionList.length > 0) {
+        for (String s : ConfigHandler.dimensionList) {
 
-            for (String s : ConfigHandler.dimensionList) {
+            try {
+                dimensions.add(Integer.parseInt(s));
+            } catch (NumberFormatException e) {
+                Champions.logger.log(Level.ERROR, "Non-integer found in dimension config! " + s);
+            }
+        }
+
+        for (String s : ConfigHandler.mobList) {
+            ResourceLocation rl = new ResourceLocation(s);
+
+            if (EntityList.getEntityNameList().contains(rl)) {
+                mobs.add(rl);
+            } else {
+                Champions.logger.log(Level.ERROR, "Invalid entity found in mob config! " + s);
+            }
+        }
+
+        for (String s : ConfigHandler.championsList) {
+            String[] args = s.split(";");
+            ResourceLocation rl = new ResourceLocation(args[0]);
+            int minTier = args.length > 1 ? Integer.parseInt(args[1]) : 0;
+            int maxTier = args.length > 2 ? Integer.parseInt(args[2]) : 0;
+
+            if (EntityList.getEntityNameList().contains(rl)) {
+                champions.put(rl, new Tuple<>(minTier, maxTier));
+            } else {
+                Champions.logger.log(Level.ERROR, "Invalid entity found in champions list config! " + s);
+            }
+        }
+
+        for (String s : ConfigHandler.lootDrops) {
+            String[] parsed = s.split(";");
+
+            if (parsed.length > 0) {
+                int tier;
+                ItemStack stack;
+                int metadata = 0;
+                int stackSize = 1;
+                boolean enchant = false;
+                int weight = 1;
+
+                if (parsed.length < 2) {
+                    Champions.logger.log(Level.ERROR, s + " needs at least a tier and an item name");
+                    continue;
+                }
 
                 try {
-                    dimensions.add(Integer.parseInt(s));
+                    tier = Integer.parseInt(parsed[0]);
                 } catch (NumberFormatException e) {
-                    Champions.logger.log(Level.ERROR, "Non-integer found in dimension config! " + s);
+                    Champions.logger.log(Level.ERROR, parsed[0] + " is not a valid tier");
+                    continue;
                 }
-            }
-        }
 
-        if (ConfigHandler.mobList.length > 0) {
+                Item item = Item.getByNameOrId(parsed[1]);
 
-            for (String s : ConfigHandler.mobList) {
-                ResourceLocation rl = new ResourceLocation(s);
-
-                if (EntityList.getEntityNameList().contains(rl)) {
-                    mobs.add(rl);
-                } else {
-                    Champions.logger.log(Level.ERROR, "Invalid entity found in mob config! " + s);
+                if (item == null) {
+                    Champions.logger.log(Level.ERROR, "Item not found!" + parsed[1]);
+                    continue;
                 }
-            }
-        }
 
-        if (ConfigHandler.championsList.length > 0) {
-
-            for (String s : ConfigHandler.championsList) {
-                String[] args = s.split(";");
-                ResourceLocation rl = new ResourceLocation(args[0]);
-                int minTier = args.length > 1 ? Integer.parseInt(args[1]) : 0;
-                int maxTier = args.length > 2 ? Integer.parseInt(args[2]) : 0;
-
-                if (EntityList.getEntityNameList().contains(rl)) {
-                    champions.put(rl, new Tuple<>(minTier, maxTier));
-                } else {
-                    Champions.logger.log(Level.ERROR, "Invalid entity found in champions list config! " + s);
-                }
-            }
-        }
-
-        if (ConfigHandler.lootDrops.length > 0) {
-
-            for (String s : ConfigHandler.lootDrops) {
-                String[] parsed = s.split(";");
-
-                if (parsed.length > 0) {
-                    int tier;
-                    ItemStack stack;
-                    int metadata = 0;
-                    int stackSize = 1;
-                    boolean enchant = false;
-                    int weight = 1;
-
-                    if (parsed.length < 2) {
-                        Champions.logger.log(Level.ERROR, s + " needs at least a tier and an item name");
-                        continue;
-                    }
+                if (parsed.length > 2) {
 
                     try {
-                        tier = Integer.parseInt(parsed[0]);
+                        metadata = Integer.parseInt(parsed[2]);
                     } catch (NumberFormatException e) {
-                        Champions.logger.log(Level.ERROR, parsed[0] + " is not a valid tier");
-                        continue;
+                        Champions.logger.log(Level.ERROR, parsed[2] + " is not a valid metadata");
                     }
 
-                    Item item = Item.getByNameOrId(parsed[1]);
-
-                    if (item == null) {
-                        Champions.logger.log(Level.ERROR, "Item not found!" + parsed[1]);
-                        continue;
-                    }
-
-                    if (parsed.length > 2) {
+                    if (parsed.length > 3) {
 
                         try {
-                            metadata = Integer.parseInt(parsed[2]);
+                            stackSize = Integer.parseInt(parsed[3]);
                         } catch (NumberFormatException e) {
-                            Champions.logger.log(Level.ERROR, parsed[2] + " is not a valid metadata");
+                            Champions.logger.log(Level.ERROR, parsed[3] + " is not a valid stack creeperStrength");
                         }
 
-                        if (parsed.length > 3) {
+                        if (parsed.length > 4) {
 
-                            try {
-                                stackSize = Integer.parseInt(parsed[3]);
-                            } catch (NumberFormatException e) {
-                                Champions.logger.log(Level.ERROR, parsed[3] + " is not a valid stack creeperStrength");
+                            if (parsed[4].equalsIgnoreCase("true")) {
+                                enchant = true;
                             }
 
-                            if (parsed.length > 4) {
-
-                                if (parsed[4].equalsIgnoreCase("true")) {
-                                    enchant = true;
-                                }
-
-                                if (parsed.length > 5) {
-                                    try {
-                                        weight = Integer.parseInt(parsed[5]);
-                                    } catch (NumberFormatException e) {
-                                        Champions.logger.log(Level.ERROR, parsed[5] + " is not a valid weight");
-                                    }
+                            if (parsed.length > 5) {
+                                try {
+                                    weight = Integer.parseInt(parsed[5]);
+                                } catch (NumberFormatException e) {
+                                    Champions.logger.log(Level.ERROR, parsed[5] + " is not a valid weight");
                                 }
                             }
                         }
                     }
-                    stack = new ItemStack(item, stackSize, metadata);
-                    drops.computeIfAbsent(tier, list -> Lists.newArrayList()).add(new LootData(stack, enchant, weight));
                 }
+                stack = new ItemStack(item, stackSize, metadata);
+                drops.computeIfAbsent(tier, list -> Lists.newArrayList()).add(new LootData(stack, enchant, weight));
             }
         }
     }

@@ -85,7 +85,7 @@ public class ItemChampionPlacer extends Item {
     @Nonnull
     @Override
     public String getItemStackDisplayName(@Nonnull ItemStack stack) {
-        String s = ("" + net.minecraft.util.text.translation.I18n.translateToLocal(this.getTranslationKey() + ".name")).trim();
+        String s = (net.minecraft.util.text.translation.I18n.translateToLocal(this.getTranslationKey() + ".name")).trim();
         String s1 = EntityList.getTranslationName(ItemMonsterPlacer.getNamedIdFrom(stack));
 
         if (s1 != null) {

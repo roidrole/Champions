@@ -19,12 +19,10 @@
 
 package c4.champions.common.affix.affix;
 
-import c4.champions.Champions;
 import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
 import c4.champions.common.config.ConfigHandler;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -37,16 +35,10 @@ import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import org.apache.logging.log4j.Level;
 
-import java.lang.reflect.Field;
 import java.util.Iterator;
 
 public class AffixMolten extends AffixBase {
-
-    private static final Field IMMUNE_TO_FIRE = ReflectionHelper.findField(Entity.class, "isImmuneToFire",
-            "field_70178_ae");
 
     public AffixMolten() {
         super("molten", AffixCategory.OFFENSE);
@@ -91,11 +83,7 @@ public class AffixMolten extends AffixBase {
         }
 
         if (!entity.isImmuneToFire()) {
-            try {
-                IMMUNE_TO_FIRE.setBoolean(entity, true);
-            } catch (IllegalAccessException e) {
-                Champions.logger.log(Level.ERROR, "Error setting fire immunity for " + entity.toString());
-            }
+            entity.isImmuneToFire = true;
         }
     }
 
