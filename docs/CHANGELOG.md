@@ -7,6 +7,7 @@ This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 ## [1.0.11.11] - Unreleased
 ### Added
 - Config to (black/white)list tiers from dimensions
+- Rewrote CT integration (old one is deprecated)
 
 ## [1.0.11.10] - 2021.01.22
 ### Fixed
