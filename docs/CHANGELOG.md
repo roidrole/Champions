@@ -8,6 +8,9 @@ This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 ### Added
 - Config to (black/white)list tiers from dimensions
 - Rewrote CT integration (old one is deprecated)
+  - Added rank attributor override
+  - Added affix attributor override
+- General code cleanup
 
 ## [1.0.11.10] - 2021.01.22
 ### Fixed

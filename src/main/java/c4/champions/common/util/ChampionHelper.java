@@ -48,14 +48,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.silentchaos512.scalinghealth.api.ScalingHealthAPI;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Level;
 
-import java.lang.reflect.Field;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ChampionHelper {
 
@@ -154,51 +151,49 @@ public class ChampionHelper {
     public static Set<String> generateAffixes(Rank rank, EntityLiving entityLivingIn, String... presets) {
         int size = rank.getAffixes();
         int tier = rank.getTier();
+        if(CTChampion.affixAttributor != null){
+            return Sets.newHashSet(Arrays.asList(CTChampion.affixAttributor.apply(entityLivingIn, tier, size)));
+        }
         Set<String> affixList = Sets.newHashSet();
-        Map<AffixCategory, Set<String>> categoryMap = AffixRegistry.getCategoryMap().entrySet().stream().collect(
-                Collectors.toMap(Map.Entry::getKey, e -> Sets.newHashSet(e.getValue())));
+        Map<AffixCategory, Set<String>> categoryMap = new HashMap<>(AffixRegistry.getCategoryMap());
 
         Set<String> curatedPresets = Sets.newHashSet(presets);
         curatedPresets.addAll(AffixFilterManager.getPresetAffixesForEntity(entityLivingIn));
-
         //Handle any preset affixes
-        if (curatedPresets.size() > 0) {
+        curatedPresets.forEach(s -> {
+            AffixBase aff = AffixRegistry.getAffix(s);
 
-            for (String s : curatedPresets) {
-                AffixBase aff = AffixRegistry.getAffix(s);
+            if (aff != null) {
+                AffixCategory cat = aff.getCategory();
+                Set<String> availableAffixes = categoryMap.get(cat);
 
-                if (aff != null) {
-                    AffixCategory cat = aff.getCategory();
-                    Set<String> availableAffixes = categoryMap.get(cat);
-
-                    if (availableAffixes != null && availableAffixes.contains(s)) {
-                        availableAffixes.remove(s);
-                        boolean added = false;
-                        AffixBase affix = AffixRegistry.getAffix(s);
-                        if (affix != null) {
-                            boolean flag = true;
-                            //Check for incompatible affixes
-                            for (String s1 : affixList) {
-
-                                if (!affix.isCompatibleWith(AffixRegistry.getAffix(s1))) {
-                                    flag = false;
-                                    break;
-                                }
-                            }
-
-                            if (flag) {
-                                affixList.add(s);
-                                added = true;
+                if (availableAffixes != null && availableAffixes.contains(s)) {
+                    availableAffixes.remove(s);
+                    boolean added = false;
+                    AffixBase affix = AffixRegistry.getAffix(s);
+                    if (affix != null) {
+                        boolean flag = true;
+                        //Check for incompatible affixes
+                        for (String s1 : affixList) {
+                            if (!affix.isCompatibleWith(AffixRegistry.getAffix(s1))) {
+                                flag = false;
+                                break;
                             }
                         }
 
-                        if (added && (availableAffixes.isEmpty() || cat != AffixCategory.OFFENSE)) {
-                            categoryMap.remove(cat);
+                        if (flag) {
+                            affixList.add(s);
+                            added = true;
                         }
+                    }
+
+                    if (added && (availableAffixes.isEmpty() || cat != AffixCategory.OFFENSE)) {
+                        categoryMap.remove(cat);
                     }
                 }
             }
-        }
+        });
+
 
         while (!categoryMap.isEmpty() && affixList.size() < size) {
             //Get random category
