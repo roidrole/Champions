@@ -53,6 +53,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Level;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ChampionHelper {
 
@@ -120,7 +121,6 @@ public class ChampionHelper {
             }
         }
 
-
         if (outputTier == 0) {
             return RankManager.getEmptyRank();
         }
@@ -161,11 +161,15 @@ public class ChampionHelper {
             return Sets.newHashSet(Arrays.asList(CTChampion.affixAttributor.apply(entityLivingIn, tier, size)));
         }
         Set<String> affixList = Sets.newHashSet();
-        Map<AffixCategory, Set<String>> categoryMap = new HashMap<>(AffixRegistry.getCategoryMap());
+        //Can't directly set a new HashMap() because arrays are not copied
+        //Could I use a bitmap of enum ordinals instead?
+        Map<AffixCategory, Set<String>> categoryMap = AffixRegistry.getCategoryMap().entrySet().stream().collect(
+            Collectors.toMap(Map.Entry::getKey, e -> Sets.newHashSet(e.getValue())));
 
+
+        //Handle any preset affixes
         Set<String> curatedPresets = Sets.newHashSet(presets);
         curatedPresets.addAll(AffixFilterManager.getPresetAffixesForEntity(entityLivingIn));
-        //Handle any preset affixes
         curatedPresets.forEach(s -> {
             AffixBase aff = AffixRegistry.getAffix(s);
 
