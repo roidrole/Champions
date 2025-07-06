@@ -98,7 +98,7 @@ public class ChampionHelper {
 
 
 
-        for (Integer tier : ranks.keySet().tailSet(firstTier, true).headSet(finalTier)) {
+        for (Integer tier : ranks.keySet().tailSet(firstTier).headSet(finalTier, true)) {
             Rank thisRank = ranks.get(tier);
             if(thisRank.isDimensionsWhitelist() != ArrayUtils.contains(thisRank.getDimensions(), entityLivingIn.dimension)){
                 continue; //Break if still decrease chance
@@ -106,7 +106,6 @@ public class ChampionHelper {
             if (Champions.isGameStagesLoaded && !ChampionStages.isValidTier(tier, entityLivingIn)) {
                 break;
             }
-
             chance = thisRank.getChance();
             if (Champions.isScalingHealthLoaded) {
                 double modifier = ChampionDifficulty.getSpawnModifier(tier);
