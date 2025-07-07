@@ -7,14 +7,18 @@ This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 ## [1.0.11.11] - Unreleased
 ### Added
 - Config to (black/white)list tiers from dimensions
+- IMob requirement configurable
 - Rewrote CT integration (old one is deprecated)
   - Added rank attributor override
   - Added affix attributor override
 - General code cleanup
 
-## [1.0.11.10] - 2021.01.22
-### Fixed
+## [1.0.11.10] - variable
+### Original Edition - 2021.01.22
+#### Fixed
 - Fixed Cinder Spark death message [#60](https://github.com/TheIllusiveC4/Champions/pull/60)
+### RotN Edition - 2020.09.06
+- Remove IMob requirement
 
 ## [1.0.11.9] - 2020.07.20
 ### Added

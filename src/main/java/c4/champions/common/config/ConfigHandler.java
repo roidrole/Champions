@@ -32,6 +32,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Config(modid = Champions.MODID)
 public class ConfigHandler {
 
+    @Name("Peaceful Mobs as Champions")
+    @Comment("Sets whether mobs not implementing IMob (peaceful mobs) can be champions")
+    public static boolean peacefulChampions = false;
+
     @Name("Hide Champion Effects")
     @Comment("Set whether to hide champion particles and HUD effects")
     public static boolean hideEffects = false;
