@@ -20,7 +20,7 @@
 package c4.champions.common.capability;
 
 import c4.champions.Champions;
-import c4.champions.common.affix.AffixRegistry;
+import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.affix.IAffix;
 import c4.champions.common.affix.filter.AffixFilter;
 import c4.champions.common.affix.filter.AffixFilterManager;
@@ -209,18 +209,12 @@ public final class CapabilityChampionship {
                     chp.setRank(rank);
 
                     if (rank.getTier() > 0) {
-                        Set<String> affixes = ChampionHelper.generateAffixes(rank, living);
+                        Set<IAffix> affixes = ChampionHelper.generateAffixes(rank, living);
                         chp.setAffixes(affixes);
                         chp.setName(ChampionHelper.generateRandomName());
                         chp.getRank().applyGrowth(living);
 
-                        for (String s : chp.getAffixes()) {
-                            IAffix affix = AffixRegistry.getAffix(s);
-
-                            if (affix != null) {
-                                affix.onInitialSpawn(living, chp);
-                            }
-                        }
+                        affixes.forEach(affix -> affix.onInitialSpawn(living, chp));
                     }
                 }
             }
@@ -251,13 +245,13 @@ public final class CapabilityChampionship {
                         chp.setRank(rank);
 
                         if (rank.getTier() > 0) {
-                            Set<String> affixes = ChampionHelper.generateAffixes(rank, living);
+                            Set<IAffix> affixes = ChampionHelper.generateAffixes(rank, living);
                             chp.setAffixes(affixes);
                             chp.setName(ChampionHelper.generateRandomName());
                             chp.getRank().applyGrowth(living);
 
                             for (String s : chp.getAffixes()) {
-                                IAffix affix = AffixRegistry.getAffix(s);
+                                IAffix affix = EnumAffix.getAffix(s);
 
                                 if (affix != null) {
                                     affix.onInitialSpawn(living, chp);

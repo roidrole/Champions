@@ -24,7 +24,7 @@ import c4.champions.command.CommandSpawnChampion;
 import c4.champions.command.CommandSpawnChampionAt;
 import c4.champions.common.EventHandlerCommon;
 import c4.champions.common.affix.AffixEvents;
-import c4.champions.common.affix.Affixes;
+import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.affix.filter.AffixFilterManager;
 import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.init.ChampionsRegistry;
@@ -91,7 +91,6 @@ public class Champions
     public void init(FMLInitializationEvent evt) {
         NetworkHandler.register();
         CapabilityChampionship.register();
-        Affixes.registerAffixes();
         MinecraftForge.EVENT_BUS.register(new AffixEvents());
         MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
         proxy.init(evt);
@@ -108,6 +107,7 @@ public class Champions
             isScalingHealthLoaded = true;
             ChampionDifficulty.loadConfigs();
         }
+        EnumAffix.registerCompats();
         RankManager.readRanksFromJson();
         AffixFilterManager.readAffixFiltersFromJson();
         ChampionHelper.parseConfigs();
@@ -117,7 +117,7 @@ public class Champions
             public ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
                 EnumFacing enumfacing = source.getBlockState().getValue(BlockDispenser.FACING);
                 double d0 = source.getX() + (double)enumfacing.getXOffset();
-                double d1 = (double)((float)(source.getBlockPos().getY() + enumfacing.getYOffset()) + 0.2F);
+                double d1 = (float)(source.getBlockPos().getY() + enumfacing.getYOffset()) + 0.2F;
                 double d2 = source.getZ() + (double)enumfacing.getZOffset();
                 Entity entity = ItemChampionPlacer.createChampion(source.getWorld(), ItemMonsterPlacer.getNamedIdFrom(stack), d0, d1, d2);
 

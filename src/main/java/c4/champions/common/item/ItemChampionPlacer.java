@@ -20,7 +20,7 @@
 package c4.champions.common.item;
 
 import c4.champions.Champions;
-import c4.champions.common.affix.AffixRegistry;
+import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.affix.IAffix;
 import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.capability.IChampionship;
@@ -249,7 +249,7 @@ public class ItemChampionPlacer extends Item {
                         for (int i = 0; i < tagList.tagCount(); i++) {
                             String affix = tagList.getStringTagAt(i);
 
-                            if (AffixRegistry.getAffix(affix) != null) {
+                            if (EnumAffix.getAffix(affix) != null) {
                                 affixes.add(affix);
                             }
                         }
@@ -257,13 +257,13 @@ public class ItemChampionPlacer extends Item {
                         if (affixes.isEmpty()) {
                             chp.setAffixes(ChampionHelper.generateAffixes(rank, targetEntity));
                         } else {
-                            chp.setAffixes(affixes);
+                            chp.setAffixes(affixes, true);
                         }
                         chp.setName(ChampionHelper.generateRandomName());
                         chp.getRank().applyGrowth(targetEntity);
 
                         for (String s : chp.getAffixes()) {
-                            IAffix affix = AffixRegistry.getAffix(s);
+                            IAffix affix = EnumAffix.getAffix(s);
 
                             if (affix != null) {
                                 affix.onInitialSpawn(targetEntity, chp);

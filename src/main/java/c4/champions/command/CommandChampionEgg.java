@@ -20,8 +20,8 @@
 package c4.champions.command;
 
 import c4.champions.Champions;
-import c4.champions.common.affix.AffixRegistry;
-import c4.champions.common.affix.core.AffixBase;
+import c4.champions.common.affix.EnumAffix;
+import c4.champions.common.affix.IAffix;
 import c4.champions.common.init.ChampionsRegistry;
 import c4.champions.common.item.ItemChampionPlacer;
 import com.google.common.collect.Sets;
@@ -92,9 +92,9 @@ public class CommandChampionEgg extends CommandBase {
 
         for (int i = 2; i < args.length; i++) {
             String affix = args[i];
-            AffixBase affixBase = AffixRegistry.getAffix(affix);
+            IAffix iAffix = EnumAffix.getAffix(affix).affix;
 
-            if (affixBase == null) {
+            if (iAffix == null) {
                 throw new CommandException(Champions.MODID + ".commands.spawnchampion.affixError", args[i]);
             }
             argAffix.add(args[i]);

@@ -19,6 +19,7 @@
 
 package c4.champions.common.capability;
 
+import c4.champions.common.affix.IAffix;
 import c4.champions.common.rank.Rank;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -28,6 +29,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Championship implements IChampionship {
 
@@ -58,13 +60,18 @@ public class Championship implements IChampionship {
     }
 
     @Override
-    public void setAffixes(Set<String> affixes) {
+    public void setAffixes(Set<String> affixes, boolean ignored) {
         Map<String, NBTTagCompound> newData = Maps.newHashMap();
 
         for (String s : affixes) {
             newData.put(s, new NBTTagCompound());
         }
         affixData = newData;
+    }
+
+    @Override
+    public void setAffixes(Set<IAffix> affixes) {
+        setAffixes(affixes.stream().map(IAffix::getIdentifier).collect(Collectors.toSet()), true);
     }
 
     @Override

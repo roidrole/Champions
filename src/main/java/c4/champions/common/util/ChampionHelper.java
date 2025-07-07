@@ -20,10 +20,9 @@
 package c4.champions.common.util;
 
 import c4.champions.Champions;
-import c4.champions.common.affix.AffixRegistry;
-import c4.champions.common.affix.core.AffixBase;
+import c4.champions.common.affix.EnumAffix;
+import c4.champions.common.affix.IAffix;
 import c4.champions.common.affix.core.AffixCategory;
-import c4.champions.common.affix.filter.AffixFilterManager;
 import c4.champions.common.config.ConfigHandler;
 import c4.champions.common.potion.PotionPlague;
 import c4.champions.common.rank.Rank;
@@ -154,110 +153,43 @@ public class ChampionHelper {
         return prefix + suffix;
     }
 
-    public static Set<String> generateAffixes(Rank rank, EntityLiving entityLivingIn, String... presets) {
+    public static Set<IAffix> generateAffixes(Rank rank, EntityLiving entityLivingIn, String... presets) {
         int size = rank.getAffixes();
-        int tier = rank.getTier();
         if(CTChampion.affixAttributor != null){
-            return Sets.newHashSet(Arrays.asList(CTChampion.affixAttributor.apply(entityLivingIn, tier, size)));
+            return Arrays.stream(CTChampion.affixAttributor.apply(entityLivingIn, rank.getTier(), size))
+                .map(name -> EnumAffix.valueOf(name.toUpperCase())).
+                collect(Collectors.toSet())
+            ;
         }
-        Set<String> affixList = Sets.newHashSet();
-        //Can't directly set a new HashMap() because arrays are not copied
-        //Could I use a bitmap of enum ordinals instead?
-        Map<AffixCategory, Set<String>> categoryMap = AffixRegistry.getCategoryMap().entrySet().stream().collect(
-            Collectors.toMap(Map.Entry::getKey, e -> Sets.newHashSet(e.getValue())));
 
+        BitSet unavailable = new BitSet(EnumAffix.length);
 
-        //Handle any preset affixes
-        Set<String> curatedPresets = Sets.newHashSet(presets);
-        curatedPresets.addAll(AffixFilterManager.getPresetAffixesForEntity(entityLivingIn));
-        curatedPresets.forEach(s -> {
-            AffixBase aff = AffixRegistry.getAffix(s);
-
-            if (aff != null) {
-                AffixCategory cat = aff.getCategory();
-                Set<String> availableAffixes = categoryMap.get(cat);
-
-                if (availableAffixes != null && availableAffixes.contains(s)) {
-                    availableAffixes.remove(s);
-                    boolean added = false;
-                    AffixBase affix = AffixRegistry.getAffix(s);
-                    if (affix != null) {
-                        boolean flag = true;
-                        //Check for incompatible affixes
-                        for (String s1 : affixList) {
-                            if (!affix.isCompatibleWith(AffixRegistry.getAffix(s1))) {
-                                flag = false;
-                                break;
-                            }
-                        }
-
-                        if (flag) {
-                            affixList.add(s);
-                            added = true;
-                        }
-                    }
-
-                    if (added && (availableAffixes.isEmpty() || cat != AffixCategory.OFFENSE)) {
-                        categoryMap.remove(cat);
-                    }
+        //Handle preset affixes
+        Set<IAffix> output = Arrays.stream(presets)
+            .map(EnumAffix::getAffix)
+            .filter(affix -> {
+                int ordinal = affix.ordinal();
+                if(unavailable.get(ordinal)){return false;}
+                if(affix.getCategory() != AffixCategory.OFFENSE){
+                    unavailable.or(EnumAffix.categorySetMap.get(affix.getCategory()));
                 }
+                unavailable.or(affix.incompats);
+                return true;
+            })
+            .collect(Collectors.toSet())
+        ;
+
+        Random random = entityLivingIn.world.rand;
+        while(output.size() < size && unavailable.cardinality() < EnumAffix.length){
+
+            EnumAffix affix = EnumAffix.values[randomClearBit(unavailable, EnumAffix.length, random)];
+            if(affix.getCategory() != AffixCategory.OFFENSE){
+                unavailable.or(EnumAffix.categorySetMap.get(affix.getCategory()));
             }
-        });
-
-
-        while (!categoryMap.isEmpty() && affixList.size() < size) {
-            //Get random category
-            AffixCategory[] categories = categoryMap.keySet().toArray(new AffixCategory[0]);
-            AffixCategory randomCategory = categories[rand.nextInt(categories.length)];
-            //Get all affixes for that category
-            Set<String> affixes = categoryMap.get(randomCategory);
-
-            if (!affixes.isEmpty()) {
-                //Get random affix
-                int element = rand.nextInt(affixes.size());
-                Iterator<String> iter = affixes.iterator();
-
-                for (int i = 0; i < element; i++) {
-                    iter.next();
-                }
-                String id = iter.next();
-                boolean added = false;
-
-                //Filter through for validity
-                AffixBase affix = AffixRegistry.getAffix(id);
-
-                if (affix != null && affix.canApply(entityLivingIn) && AffixFilterManager.isValidAffix(affix,
-                        entityLivingIn, tier)) {
-                    boolean flag = true;
-                    //Check for incompatible affixes
-                    for (String s : affixList) {
-
-                        if (!affix.isCompatibleWith(AffixRegistry.getAffix(s))) {
-                            flag = false;
-                            break;
-                        }
-                    }
-
-                    if (flag) {
-                        affixList.add(id);
-                        added = true;
-                    }
-                }
-
-                //Remove entire category only if the affix was actually added and the category is limited
-                if (added && randomCategory != AffixCategory.OFFENSE) {
-                    categoryMap.remove(randomCategory);
-                } //Otherwise, remove the affix from the running set and then remove the category if it's now empty
-                else {
-                    affixes.remove(id);
-
-                    if (affixes.isEmpty()) {
-                        categoryMap.remove(randomCategory);
-                    }
-                }
-            }
+            unavailable.or(affix.incompats);
+            output.add(affix);
         }
-        return affixList;
+        return output;
     }
 
     public static boolean isElite(Rank rank) {
@@ -448,6 +380,15 @@ public class ChampionHelper {
         }
 
         return drops;
+    }
+
+    public static int randomClearBit(BitSet set, int size, Random rand){
+        int indexInValid = rand.nextInt(size - set.cardinality());
+        int indexInAll = set.nextClearBit(0);
+        for (int i = 0; i < indexInValid; i++) {
+            indexInAll = set.nextClearBit(indexInAll+1);
+        }
+        return indexInAll;
     }
 
     private static class LootData {

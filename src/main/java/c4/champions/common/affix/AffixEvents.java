@@ -20,7 +20,6 @@
 package c4.champions.common.affix;
 
 import c4.champions.Champions;
-import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.capability.IChampionship;
 import c4.champions.common.config.ConfigHandler;
@@ -50,7 +49,7 @@ public class AffixEvents {
             if (chp != null) {
 
                 for (String aff : chp.getAffixes()) {
-                    AffixBase affix = AffixRegistry.getAffix(aff);
+                    IAffix affix = EnumAffix.getAffix(aff);
 
                     if (affix != null) {
                         affix.onSpawn(living, chp);
@@ -82,7 +81,7 @@ public class AffixEvents {
             if (chp != null) {
 
                 for (String aff : chp.getAffixes()) {
-                    AffixBase affix = AffixRegistry.getAffix(aff);
+                    IAffix affix = EnumAffix.getAffix(aff);
 
                     if (affix != null) {
                         affix.onUpdate(living, chp);
@@ -119,7 +118,7 @@ public class AffixEvents {
             if (chp != null) {
 
                 for (String aff : chp.getAffixes()) {
-                    AffixBase affix = AffixRegistry.getAffix(aff);
+                    IAffix affix = EnumAffix.getAffix(aff);
 
                     if (affix != null) {
                         affix.onAttacked(living, chp, evt.getSource(), evt.getAmount(), evt);
@@ -141,7 +140,7 @@ public class AffixEvents {
                 if (chp != null) {
 
                     for (String aff : chp.getAffixes()) {
-                        AffixBase affix = AffixRegistry.getAffix(aff);
+                        IAffix affix = EnumAffix.getAffix(aff);
 
                         if (affix != null) {
                             affix.onAttack(living, chp, evt.getEntityLiving(), evt.getSource(), evt.getAmount(), evt);
@@ -165,7 +164,7 @@ public class AffixEvents {
             if (chp != null) {
 
                 for (String aff : chp.getAffixes()) {
-                    AffixBase affix = AffixRegistry.getAffix(aff);
+                    IAffix affix = EnumAffix.getAffix(aff);
 
                     if (affix != null) {
                         newAmount = affix.onHurt(living, chp, evt.getSource(), amount, newAmount);
@@ -189,7 +188,7 @@ public class AffixEvents {
             if (chp != null) {
 
                 for (String aff : chp.getAffixes()) {
-                    AffixBase affix = AffixRegistry.getAffix(aff);
+                    IAffix affix = EnumAffix.getAffix(aff);
 
                     if (affix != null) {
                         newAmount = affix.onDamaged(living, chp, evt.getSource(), amount, newAmount);
@@ -210,7 +209,7 @@ public class AffixEvents {
             if (chp != null) {
 
                 for (String aff : chp.getAffixes()) {
-                    AffixBase affix = AffixRegistry.getAffix(aff);
+                    IAffix affix = EnumAffix.getAffix(aff);
 
                     if (affix != null) {
                         affix.onKnockback(living, chp, evt);
@@ -230,7 +229,7 @@ public class AffixEvents {
             if (chp != null) {
 
                 for (String aff : chp.getAffixes()) {
-                    AffixBase affix = AffixRegistry.getAffix(aff);
+                    IAffix affix = EnumAffix.getAffix(aff);
 
                     if (affix != null) {
                         affix.onDeath(living, chp, evt.getSource(), evt);
@@ -253,7 +252,7 @@ public class AffixEvents {
             if (chp != null) {
 
                 for (String aff : chp.getAffixes()) {
-                    AffixBase affix = AffixRegistry.getAffix(aff);
+                    IAffix affix = EnumAffix.getAffix(aff);
 
                     if (affix != null) {
                         newAmount = affix.onHealed(living, chp,  amount, newAmount);

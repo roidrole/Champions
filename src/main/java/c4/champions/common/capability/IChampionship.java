@@ -19,6 +19,7 @@
 
 package c4.champions.common.capability;
 
+import c4.champions.common.affix.IAffix;
 import c4.champions.common.rank.Rank;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -39,7 +40,9 @@ public interface IChampionship {
 
     void setAffixData(String identifier, NBTTagCompound compound);
 
-    void setAffixes(Set<String> affixes);
+    void setAffixes(Set<String> affixes, boolean ignored);
+
+    void setAffixes(Set<IAffix> affixes);
 
     ImmutableMap<String, NBTTagCompound> getAffixData();
 

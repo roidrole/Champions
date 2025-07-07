@@ -20,9 +20,8 @@
 package c4.champions.command;
 
 import c4.champions.Champions;
-import c4.champions.common.affix.AffixRegistry;
+import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.affix.IAffix;
-import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.capability.IChampionship;
 import c4.champions.common.rank.Rank;
@@ -106,7 +105,7 @@ public class CommandSpawnChampionAt extends CommandBase {
 
     for (int i = 5; i < args.length; i++) {
       String affix = args[i];
-      AffixBase affixBase = AffixRegistry.getAffix(affix);
+      IAffix affixBase = EnumAffix.getAffix(affix);
 
       if (affixBase == null) {
         throw new CommandException(
@@ -127,17 +126,17 @@ public class CommandSpawnChampionAt extends CommandBase {
       if (rank.getTier() > 0) {
 
         if (argAffix.isEmpty()) {
-          Set<String> affixes = ChampionHelper.generateAffixes(rank, living);
+          Set<IAffix> affixes = ChampionHelper.generateAffixes(rank, living);
           chp.setAffixes(affixes);
         } else {
-          chp.setAffixes(argAffix);
+          chp.setAffixes(argAffix,  true);
         }
 
         chp.setName(ChampionHelper.generateRandomName());
         chp.getRank().applyGrowth(living);
 
         for (String s : chp.getAffixes()) {
-          IAffix affix = AffixRegistry.getAffix(s);
+          IAffix affix = EnumAffix.getAffix(s);
 
           if (affix != null) {
             affix.onInitialSpawn(living, chp);
@@ -155,9 +154,7 @@ public class CommandSpawnChampionAt extends CommandBase {
 
   @Override
   @Nonnull
-  public List<String> getTabCompletions(MinecraftServer server,
-                                        ICommandSender sender, String[] args,
-                                        @Nullable BlockPos targetPos) {
+  public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
     return Collections.emptyList();
   }
 }
