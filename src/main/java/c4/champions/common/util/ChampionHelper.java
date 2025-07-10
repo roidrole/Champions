@@ -383,12 +383,14 @@ public class ChampionHelper {
     }
 
     public static int randomClearBit(BitSet set, int size, Random rand){
-        int indexInValid = rand.nextInt(size - set.cardinality());
-        int indexInAll = set.nextClearBit(0);
-        for (int i = 0; i < indexInValid; i++) {
-            indexInAll = set.nextClearBit(indexInAll+1);
+        //Using nextClearBit would be introducing bias towards lines of numbers
+        //I probably don't need a counter here, since I'm doing security upstream
+        while (true){
+            int index = rand.nextInt(size);
+            if(!set.get(index)){
+                return index;
+            }
         }
-        return indexInAll;
     }
 
     private static class LootData {
