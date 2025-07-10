@@ -72,4 +72,9 @@ dependencies {
     compileOnly('curse.maven:silent-lib-242998:2851111')
     compileOnly('curse.maven:scaling-health-248027:2816920')
     implementation('mezz:jei:4.25.5')
+
+    runtimeOnly('curse.maven:spark-unforged-900927:4691415')
+    runtimeOnly('curse.maven:configanytime-870276:5212709')
+    runtimeOnly('curse.maven:mixin-booter-419286:6344449')
+    runtimeOnly('curse.maven:fermiumbooter-968474:6741950')
 }

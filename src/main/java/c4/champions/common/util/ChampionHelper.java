@@ -23,6 +23,7 @@ import c4.champions.Champions;
 import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.affix.IAffix;
 import c4.champions.common.affix.core.AffixCategory;
+import c4.champions.common.affix.filter.AffixFilterManager;
 import c4.champions.common.config.ConfigHandler;
 import c4.champions.common.potion.PotionPlague;
 import c4.champions.common.rank.Rank;
@@ -153,7 +154,7 @@ public class ChampionHelper {
         return prefix + suffix;
     }
 
-    public static Set<IAffix> generateAffixes(Rank rank, EntityLiving entityLivingIn, String... presets) {
+    public static Set<IAffix> generateAffixes(Rank rank, EntityLiving entityLivingIn) {
         int size = rank.getAffixes();
         if(CTChampion.affixAttributor != null){
             return Arrays.stream(CTChampion.affixAttributor.apply(entityLivingIn, rank.getTier(), size))
@@ -165,8 +166,7 @@ public class ChampionHelper {
         BitSet unavailable = new BitSet(EnumAffix.length);
 
         //Handle preset affixes
-        Set<IAffix> output = Arrays.stream(presets)
-            .map(EnumAffix::getAffix)
+        Set<IAffix> output = AffixFilterManager.getPresetAffixesForEntity(entityLivingIn).stream()
             .filter(affix -> {
                 int ordinal = affix.ordinal();
                 if(unavailable.get(ordinal)){return false;}

@@ -36,14 +36,14 @@ import net.minecraftforge.fml.common.Loader;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
 public class AffixFilterManager {
 
     private static final Map<String, AffixFilter> FILTERS = Maps.newHashMap();
-    private static final Map<String, Set<String>> ENTITY_AFFIX_MAP = Maps.newHashMap();
+    private static final Map<String, Set<EnumAffix>> ENTITY_AFFIX_MAP = Maps.newHashMap();
 
     @Nullable
     public static AffixFilter getAffixFilter(String identifier) {
@@ -81,7 +81,7 @@ public class AffixFilterManager {
     }
 
     @Nonnull
-    public static Set<String> getPresetAffixesForEntity(Entity entity) {
+    public static Set<EnumAffix> getPresetAffixesForEntity(Entity entity) {
         ResourceLocation rl = EntityList.getKey(entity);
         return rl != null ? ENTITY_AFFIX_MAP.getOrDefault(rl.toString(), Sets.newHashSet()) : Sets.newHashSet();
     }
@@ -91,28 +91,20 @@ public class AffixFilterManager {
                 .getConfigDir(), Champions.MODID + "/affixes.json"), buildDefaultAffixFilters());
 
         for (AffixFilter filter : filters) {
-            FILTERS.put(filter.getIdentifier(), filter);
+            FILTERS.put(filter.getAffix().getIdentifier(), filter);
             String[] alwaysOn = filter.getAlwaysOnEntity();
 
-            if (alwaysOn.length > 0) {
-
-                for (String entityName : alwaysOn) {
-                    Set<String> affixes = ENTITY_AFFIX_MAP.getOrDefault(entityName, Sets.newHashSet());
-                    affixes.add(filter.getIdentifier());
-                    ENTITY_AFFIX_MAP.putIfAbsent(entityName, affixes);
-                }
+            for (String entityName : alwaysOn) {
+                Set<EnumAffix> affixes = ENTITY_AFFIX_MAP.getOrDefault(entityName, Sets.newHashSet());
+                affixes.add(filter.getAffix());
+                ENTITY_AFFIX_MAP.putIfAbsent(entityName, affixes);
             }
         }
     }
 
     private static AffixFilter[] buildDefaultAffixFilters() {
-        IAffix[] affixes = EnumAffix.values;
-        List<AffixFilter> filters = Lists.newArrayList();
-
-        for (IAffix aff : affixes) {
-            filters.add(new AffixFilter(aff.getIdentifier(), true, new String[]{}, new String[]{}, aff.getTier()));
-        }
-        AffixFilter[] arr = new AffixFilter[filters.size()];
-        return filters.toArray(arr);
+        return Arrays.stream(EnumAffix.values())
+            .map(affix -> new AffixFilter(affix, true, new String[]{}, new String[]{}, affix.getTier()))
+            .toArray(AffixFilter[]::new);
     }
 }
