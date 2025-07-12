@@ -27,7 +27,6 @@ import com.google.common.collect.Sets;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 
@@ -35,6 +34,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +42,7 @@ public class AffixFilterManager {
 
     private static AffixFilter[] FILTERS;
     private static final Map<String, Set<EnumAffix>> ENTITY_AFFIX_MAP = Maps.newHashMap();
+    private static final Map<Class<? extends Entity>, BitSet> ENTITY_INCOMPATS_MAP = Maps.newHashMap();
 
     @Nullable
     public static AffixFilter getAffixFilter(int ordinal) {
@@ -52,34 +53,37 @@ public class AffixFilterManager {
         return FILTERS[EnumAffix.valueOf(identifier.toUpperCase()).ordinal()];
     }
 
-    public static boolean isValidAffix(EnumAffix affix, EntityLiving entityLiving, int tier) {
+    public static boolean isValidTier(EnumAffix affix, int tier) {
         AffixFilter filter = getAffixFilter(affix.ordinal());
-        boolean hasTier = affix.getTier() <= tier;
-
-        if (filter != null) {
-            hasTier = filter.getTier() <= tier;
-            return filter.isEnabled() && hasTier && !isEntityBlacklisted(filter, entityLiving);
+        if(filter == null){
+            return affix.getTier() <= tier;
         }
-        return hasTier;
-    }
-
-    public static boolean isEntityBlacklisted(@Nonnull AffixFilter filter, Entity entity) {
-        ResourceLocation rl = EntityList.getKey(entity);
-        if (rl == null) {
-            return false;
-        }
-        for (String key : filter.getEntityBlacklist()) {
-            if (key.equals(rl.toString())) {
-                return true;
-            }
-        }
-        return false;
+        return filter.isEnabled() && filter.getTier() <= tier;
     }
 
     @Nonnull
     public static Set<EnumAffix> getPresetAffixesForEntity(Entity entity) {
         ResourceLocation rl = EntityList.getKey(entity);
         return rl != null ? ENTITY_AFFIX_MAP.getOrDefault(rl.toString(), Sets.newHashSet()) : Sets.newHashSet();
+    }
+    @Nonnull
+    public static BitSet getIncompatAffixesForEntity(Entity entity) {
+        System.out.println(ENTITY_INCOMPATS_MAP);
+        return ENTITY_INCOMPATS_MAP.computeIfAbsent(entity.getClass(), k -> new BitSet(EnumAffix.length){{
+            //Builds the incompats by scanning all filters and adding the corresponding to the BitSet, caching the result
+            //Supposes that FILTERS and EnumAffix has the same ordinal/index.
+            ResourceLocation entityKey = EntityList.getKey(k);
+            if(entityKey != null){
+                String thisId = entityKey.toString();
+                for (int i = 0; i < FILTERS.length; i++) {
+                    for(String id : FILTERS[i].getEntityBlacklist()){
+                        if(id.equals(thisId)){
+                            this.set(i);
+                        }
+                    }
+                }
+            }
+        }});
     }
 
     public static void readAffixFiltersFromJson() {

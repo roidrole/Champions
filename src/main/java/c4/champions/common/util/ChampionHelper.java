@@ -46,7 +46,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.silentchaos512.scalinghealth.api.ScalingHealthAPI;
 import org.apache.commons.lang3.ArrayUtils;
@@ -179,12 +178,13 @@ public class ChampionHelper {
             })
             .collect(Collectors.toSet())
         ;
+        unavailable.or(AffixFilterManager.getIncompatAffixesForEntity(entityLivingIn));
 
         Random random = entityLivingIn.world.rand;
         while(output.size() < size && unavailable.cardinality() < EnumAffix.length){
 
             EnumAffix affix = EnumAffix.values[randomClearBit(unavailable, EnumAffix.length, random)];
-            if(!AffixFilterManager.isValidAffix(affix, entityLivingIn, tier)){
+            if(!AffixFilterManager.isValidTier(affix, tier)){
                 unavailable.set(affix.ordinal());
                 continue;
             }
@@ -201,21 +201,18 @@ public class ChampionHelper {
         return rank != null && rank.getTier() > 0;
     }
 
-    private static boolean nearActiveBeacon(final EntityLiving entityLivingIn) {
+    private static boolean nearActiveBeacon(final EntityLiving entity) {
         int range = ConfigHandler.beaconRange;
-
         if (range <= 0) {
             return false;
         }
-
-        for (TileEntity te : entityLivingIn.world.tickableTileEntities) {
-            BlockPos pos = te.getPos();
-
-            if (te instanceof TileEntityBeacon && entityLivingIn.getDistanceSq(pos) <= range * range) {
-
-                if (((TileEntityBeacon)te).isComplete) {
-                    return true;
-                }
+        range = range * range;
+        for (TileEntity te : entity.world.tickableTileEntities) {
+            if(!(te instanceof  TileEntityBeacon)){continue;}
+            TileEntityBeacon beacon = (TileEntityBeacon)te;
+            if(!beacon.isComplete){continue;}
+            if(entity.getDistanceSqToCenter(beacon.getPos()) <= range){
+                return true;
             }
         }
         return false;

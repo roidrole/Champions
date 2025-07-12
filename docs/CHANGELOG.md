@@ -12,6 +12,9 @@ This project uses MAJORMOD.MAJORAPI.MINOR.PATCH.
   - Added affix attributor override
 - General code cleanup
 
+### Changed
+- config/champions/affixes must be in default order ; default order might have changed
+
 ## [1.0.11.10] - 2021.01.22
 ### Fixed
 - Fixed Cinder Spark death message [#60](https://github.com/TheIllusiveC4/Champions/pull/60)
