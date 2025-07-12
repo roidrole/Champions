@@ -48,110 +48,102 @@ import java.util.Set;
 
 public class CommandSpawnChampion extends CommandBase {
 
-  public CommandSpawnChampion() {
-  }
+    public CommandSpawnChampion() {}
 
-  @Override
-  @Nonnull
-  public String getName() {
-    return "spawnchampion";
-  }
-
-  @Override
-  public int getRequiredPermissionLevel() {
-    return 2;
-  }
-
-  @Override
-  @Nonnull
-  public String getUsage(@Nonnull ICommandSender sender) {
-    return Champions.MODID + ".commands.spawnchampion.usage";
-  }
-
-  @Override
-  public void execute(@Nonnull MinecraftServer server,
-                      @Nonnull ICommandSender sender, @Nonnull String[] args)
-  throws CommandException {
-
-    if (args.length < 2) {
-      throw new WrongUsageException(getUsage(sender));
+    @Override
+    @Nonnull
+    public String getName() {
+        return "spawnchampion";
     }
-    Entity entity =
+
+    @Override
+    public int getRequiredPermissionLevel() {
+        return 2;
+    }
+
+    @Override
+    @Nonnull
+    public String getUsage(@Nonnull ICommandSender sender) {
+        return Champions.MODID + ".commands.spawnchampion.usage";
+    }
+
+    @Override
+    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
+
+        if (args.length < 2) {
+            throw new WrongUsageException(getUsage(sender));
+        }
+        Entity entity =
             EntityList.createEntityByIDFromName(new ResourceLocation(args[0]),
-                                                sender.getEntityWorld());
+                sender.getEntityWorld());
 
-    if (!(entity instanceof EntityLiving)) {
-      throw new CommandException(
-              Champions.MODID + ".commands.spawnchampion.entityError", args[0]);
-    }
-
-    EntityLiving living = (EntityLiving) entity;
-
-    int tier;
-
-    try {
-      tier = Integer.parseInt(args[1]);
-    } catch (NumberFormatException e) {
-      throw new CommandException(
-              Champions.MODID + ".commands.spawnchampion.tierError", args[1]);
-    }
-    Set<String> argAffix = Sets.newHashSet();
-
-    for (int i = 2; i < args.length; i++) {
-      String affix = args[i];
-      IAffix iAffix = EnumAffix.getAffix(affix);
-
-      if (iAffix == null) {
-        throw new CommandException(
-                Champions.MODID + ".commands.spawnchampion.affixError",
-                args[i]);
-      }
-      argAffix.add(args[i]);
-    }
-
-    World world = sender.getEntityWorld();
-    BlockPos pos = sender.getPosition();
-    living.setPosition(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d);
-    IChampionship chp = CapabilityChampionship.getChampionship(living);
-
-    if (chp != null) {
-      Rank rank = RankManager.getRankForTier(tier);
-      chp.setRank(rank);
-
-      if (rank.getTier() > 0) {
-
-        if (argAffix.isEmpty()) {
-          Set<IAffix> affixes = ChampionHelper.generateAffixes(rank, living);
-          chp.setAffixes(affixes);
-        } else {
-          chp.setAffixes(argAffix, true);
+        if (!(entity instanceof EntityLiving)) {
+            throw new CommandException(
+                Champions.MODID + ".commands.spawnchampion.entityError", args[0]);
         }
 
-        chp.setName(ChampionHelper.generateRandomName());
-        chp.getRank().applyGrowth(living);
+        EntityLiving living = (EntityLiving) entity;
 
-        for (String s : chp.getAffixes()) {
-          IAffix affix = EnumAffix.getAffix(s);
+        int tier;
 
-          if (affix != null) {
-            affix.onInitialSpawn(living, chp);
-          }
+        try {
+            tier = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            throw new CommandException(
+                Champions.MODID + ".commands.spawnchampion.tierError", args[1]);
         }
-      }
+        Set<String> argAffix = Sets.newHashSet();
+
+        for (int i = 2; i < args.length; i++) {
+            String affix = args[i];
+            IAffix iAffix = EnumAffix.getAffix(affix);
+
+            if (iAffix == null) {
+                throw new CommandException(
+                    Champions.MODID + ".commands.spawnchampion.affixError",
+                    args[i]);
+            }
+            argAffix.add(args[i]);
+        }
+
+        World world = sender.getEntityWorld();
+        BlockPos pos = sender.getPosition();
+        living.setPosition(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d);
+        IChampionship chp = CapabilityChampionship.getChampionship(living);
+
+        if (chp != null) {
+            Rank rank = RankManager.getRankForTier(tier);
+            chp.setRank(rank);
+
+            if (rank.getTier() > 0) {
+
+                if (argAffix.isEmpty()) {
+                    chp.setAffixes(ChampionHelper.generateAffixes(rank, living));
+                } else {
+                    chp.setAffixes(argAffix, true);
+                }
+
+                chp.setName(ChampionHelper.generateRandomName());
+                chp.getRank().applyGrowth(living);
+
+                for (String s : chp.getAffixes()) {
+                    IAffix affix = EnumAffix.getAffix(s);
+
+                    if (affix != null) {
+                        affix.onInitialSpawn(living, chp);
+                    }
+                }
+            }
+        }
+
+        living.onInitialSpawn(world.getDifficultyForLocation(pos), null);
+        world.spawnEntity(living);
+        notifyCommandListener(sender, this, Champions.MODID + ".commands.spawnchampion.success", pos);
     }
 
-    living.onInitialSpawn(world.getDifficultyForLocation(pos), null);
-    world.spawnEntity(living);
-    notifyCommandListener(sender, this,
-                          Champions.MODID + ".commands.spawnchampion.success",
-                          pos);
-  }
-
-  @Override
-  @Nonnull
-  public List<String> getTabCompletions(MinecraftServer server,
-                                        ICommandSender sender, String[] args,
-                                        @Nullable BlockPos targetPos) {
-    return Collections.emptyList();
-  }
+    @Override
+    @Nonnull
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        return Collections.emptyList();
+    }
 }

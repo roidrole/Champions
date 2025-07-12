@@ -126,8 +126,7 @@ public class CommandSpawnChampionAt extends CommandBase {
       if (rank.getTier() > 0) {
 
         if (argAffix.isEmpty()) {
-          Set<IAffix> affixes = ChampionHelper.generateAffixes(rank, living);
-          chp.setAffixes(affixes);
+          chp.setAffixes(ChampionHelper.generateAffixes(rank, living));
         } else {
           chp.setAffixes(argAffix,  true);
         }

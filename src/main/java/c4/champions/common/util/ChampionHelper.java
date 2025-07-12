@@ -156,8 +156,9 @@ public class ChampionHelper {
 
     public static Set<IAffix> generateAffixes(Rank rank, EntityLiving entityLivingIn) {
         int size = rank.getAffixes();
+        int tier = rank.getTier();
         if(CTChampion.affixAttributor != null){
-            return Arrays.stream(CTChampion.affixAttributor.apply(entityLivingIn, rank.getTier(), size))
+            return Arrays.stream(CTChampion.affixAttributor.apply(entityLivingIn, tier, size))
                 .map(name -> EnumAffix.valueOf(name.toUpperCase())).
                 collect(Collectors.toSet())
             ;
@@ -183,6 +184,10 @@ public class ChampionHelper {
         while(output.size() < size && unavailable.cardinality() < EnumAffix.length){
 
             EnumAffix affix = EnumAffix.values[randomClearBit(unavailable, EnumAffix.length, random)];
+            if(!AffixFilterManager.isValidAffix(affix, entityLivingIn, tier)){
+                unavailable.set(affix.ordinal());
+                continue;
+            }
             if(affix.getCategory() != AffixCategory.OFFENSE){
                 unavailable.or(EnumAffix.categorySetMap.get(affix.getCategory()));
             }
@@ -206,7 +211,7 @@ public class ChampionHelper {
         for (TileEntity te : entityLivingIn.world.tickableTileEntities) {
             BlockPos pos = te.getPos();
 
-            if (entityLivingIn.getDistanceSq(pos) <= range * range && te instanceof TileEntityBeacon) {
+            if (te instanceof TileEntityBeacon && entityLivingIn.getDistanceSq(pos) <= range * range) {
 
                 if (((TileEntityBeacon)te).isComplete) {
                     return true;

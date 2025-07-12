@@ -21,9 +21,7 @@ package c4.champions.common.affix.filter;
 
 import c4.champions.Champions;
 import c4.champions.common.affix.EnumAffix;
-import c4.champions.common.affix.IAffix;
 import c4.champions.common.util.JsonUtil;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.reflect.TypeToken;
@@ -42,20 +40,20 @@ import java.util.Set;
 
 public class AffixFilterManager {
 
-    private static final Map<String, AffixFilter> FILTERS = Maps.newHashMap();
+    private static AffixFilter[] FILTERS;
     private static final Map<String, Set<EnumAffix>> ENTITY_AFFIX_MAP = Maps.newHashMap();
 
     @Nullable
+    public static AffixFilter getAffixFilter(int ordinal) {
+        return FILTERS[ordinal];
+    }
+    @Nullable
     public static AffixFilter getAffixFilter(String identifier) {
-        return FILTERS.get(identifier);
+        return FILTERS[EnumAffix.valueOf(identifier.toUpperCase()).ordinal()];
     }
 
-    public static boolean hasAffixFilter(String identifier) {
-        return getAffixFilter(identifier) != null;
-    }
-
-    public static boolean isValidAffix(IAffix affix, EntityLiving entityLiving, int tier) {
-        AffixFilter filter = getAffixFilter(affix.getIdentifier());
+    public static boolean isValidAffix(EnumAffix affix, EntityLiving entityLiving, int tier) {
+        AffixFilter filter = getAffixFilter(affix.ordinal());
         boolean hasTier = affix.getTier() <= tier;
 
         if (filter != null) {
@@ -67,14 +65,12 @@ public class AffixFilterManager {
 
     public static boolean isEntityBlacklisted(@Nonnull AffixFilter filter, Entity entity) {
         ResourceLocation rl = EntityList.getKey(entity);
-
-        if (rl != null) {
-
-            for (String key : filter.getEntityBlacklist()) {
-
-                if (key.equals(rl.toString())) {
-                    return true;
-                }
+        if (rl == null) {
+            return false;
+        }
+        for (String key : filter.getEntityBlacklist()) {
+            if (key.equals(rl.toString())) {
+                return true;
             }
         }
         return false;
@@ -87,14 +83,11 @@ public class AffixFilterManager {
     }
 
     public static void readAffixFiltersFromJson() {
-        AffixFilter[] filters = JsonUtil.fromJson(TypeToken.get(AffixFilter[].class), new File(Loader.instance()
-                .getConfigDir(), Champions.MODID + "/affixes.json"), buildDefaultAffixFilters());
+        FILTERS = JsonUtil.fromJson(TypeToken.get(AffixFilter[].class), new File(Loader.instance()
+            .getConfigDir(), Champions.MODID + "/affixes.json"), buildDefaultAffixFilters());
 
-        for (AffixFilter filter : filters) {
-            FILTERS.put(filter.getAffix().getIdentifier(), filter);
-            String[] alwaysOn = filter.getAlwaysOnEntity();
-
-            for (String entityName : alwaysOn) {
+        for (AffixFilter filter : FILTERS) {
+            for (String entityName : filter.getAlwaysOnEntity()) {
                 Set<EnumAffix> affixes = ENTITY_AFFIX_MAP.getOrDefault(entityName, Sets.newHashSet());
                 affixes.add(filter.getAffix());
                 ENTITY_AFFIX_MAP.putIfAbsent(entityName, affixes);
@@ -103,7 +96,7 @@ public class AffixFilterManager {
     }
 
     private static AffixFilter[] buildDefaultAffixFilters() {
-        return Arrays.stream(EnumAffix.values())
+        return Arrays.stream(EnumAffix.values)
             .map(affix -> new AffixFilter(affix, true, new String[]{}, new String[]{}, affix.getTier()))
             .toArray(AffixFilter[]::new);
     }
