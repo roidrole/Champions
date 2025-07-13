@@ -22,8 +22,6 @@ package c4.champions.common.affix.filter;
 import c4.champions.Champions;
 import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.util.JsonUtil;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -33,16 +31,13 @@ import net.minecraftforge.fml.common.Loader;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class AffixFilterManager {
 
     private static AffixFilter[] FILTERS;
-    private static final Map<String, Set<EnumAffix>> ENTITY_AFFIX_MAP = Maps.newHashMap();
-    private static final Map<Class<? extends Entity>, BitSet> ENTITY_INCOMPATS_MAP = Maps.newHashMap();
+    private static final Map<Class<? extends Entity>, Set<EnumAffix>> ENTITY_AFFIX_MAP = new HashMap<>();
+    private static final Map<Class<? extends Entity>, BitSet> ENTITY_INCOMPATS_MAP = new HashMap<>(16);
 
     @Nullable
     public static AffixFilter getAffixFilter(int ordinal) {
@@ -63,12 +58,10 @@ public class AffixFilterManager {
 
     @Nonnull
     public static Set<EnumAffix> getPresetAffixesForEntity(Entity entity) {
-        ResourceLocation rl = EntityList.getKey(entity);
-        return rl != null ? ENTITY_AFFIX_MAP.getOrDefault(rl.toString(), Sets.newHashSet()) : Sets.newHashSet();
+        return ENTITY_AFFIX_MAP.getOrDefault(entity.getClass(), EnumSet.noneOf(EnumAffix.class));
     }
     @Nonnull
     public static BitSet getIncompatAffixesForEntity(Entity entity) {
-        System.out.println(ENTITY_INCOMPATS_MAP);
         return ENTITY_INCOMPATS_MAP.computeIfAbsent(entity.getClass(), k -> new BitSet(EnumAffix.length){{
             //Builds the incompats by scanning all filters and adding the corresponding to the BitSet, caching the result
             //Supposes that FILTERS and EnumAffix has the same ordinal/index.
@@ -92,9 +85,10 @@ public class AffixFilterManager {
 
         for (AffixFilter filter : FILTERS) {
             for (String entityName : filter.getAlwaysOnEntity()) {
-                Set<EnumAffix> affixes = ENTITY_AFFIX_MAP.getOrDefault(entityName, Sets.newHashSet());
-                affixes.add(filter.getAffix());
-                ENTITY_AFFIX_MAP.putIfAbsent(entityName, affixes);
+                Class<? extends Entity> entityClass = EntityList.getClass(new ResourceLocation(entityName));
+                ENTITY_AFFIX_MAP
+                    .computeIfAbsent(entityClass, clazz -> EnumSet.noneOf(EnumAffix.class))
+                    .add(filter.getAffix());
             }
         }
     }
