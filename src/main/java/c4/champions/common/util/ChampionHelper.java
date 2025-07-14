@@ -57,10 +57,10 @@ public class ChampionHelper {
 
     public static Random rand = new Random();
 
-    private static Set<Integer> dimensions = Sets.newHashSet();
-    private static Set<ResourceLocation> mobs = Sets.newHashSet();
-    private static Map<Integer, List<LootData>> drops = Maps.newHashMap();
-    private static Map<ResourceLocation, Tuple<Integer, Integer>> champions = Maps.newHashMap();
+    private static final Set<Integer> dimensions = Sets.newHashSet();
+    private static final Set<ResourceLocation> mobs = Sets.newHashSet();
+    private static final Map<Integer, List<LootData>> drops = Maps.newHashMap();
+    private static final Map<ResourceLocation, Tuple<Integer, Integer>> champions = Maps.newHashMap();
 
     public static boolean isValidChampion(final Entity entity) {
         return entity instanceof EntityLiving && isValidEntity(entity);
@@ -175,7 +175,7 @@ public class ChampionHelper {
                 unavailable.or(affix.incompats);
                 return true;
             })
-            .collect(Collectors.toCollection(() -> EnumSet.noneOf(EnumAffix.class)));
+            .collect(Collectors.toCollection(() -> EnumSet.noneOf(EnumAffix.class)))
         ;
         unavailable.or(AffixFilterManager.getIncompatAffixesForEntity(entityLivingIn));
 
@@ -396,9 +396,9 @@ public class ChampionHelper {
 
     private static class LootData {
 
-        private ItemStack stack;
-        private boolean enchant;
-        private int weight;
+        private final ItemStack stack;
+        private final boolean enchant;
+        private final int weight;
 
         LootData(ItemStack stack, boolean enchant, int weight) {
             this.stack = stack;
