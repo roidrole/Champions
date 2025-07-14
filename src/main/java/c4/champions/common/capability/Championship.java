@@ -19,7 +19,7 @@
 
 package c4.champions.common.capability;
 
-import c4.champions.common.affix.IAffix;
+import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.rank.Rank;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -70,9 +70,10 @@ public class Championship implements IChampionship {
     }
 
     @Override
-    public void setAffixes(Set<IAffix> affixes) {
-        setAffixes(affixes.stream().map(IAffix::getIdentifier).collect(Collectors.toSet()), true);
+    public void setAffixes(Set<EnumAffix> affixes) {
+        setAffixes(affixes.stream().map(EnumAffix::getIdentifier).collect(Collectors.toSet()), true);
     }
+    //53.9, 52.2
 
     @Override
     public ImmutableMap<String, NBTTagCompound> getAffixData() {

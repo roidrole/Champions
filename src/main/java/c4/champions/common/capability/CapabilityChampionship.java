@@ -38,6 +38,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.*;
@@ -82,22 +83,22 @@ public final class CapabilityChampionship {
             public NBTBase writeNBT(Capability<IChampionship> capability, IChampionship instance, EnumFacing side) {
                 NBTTagCompound compound = new NBTTagCompound();
                 Rank rank = instance.getRank();
-
                 if (rank != null) {
+                    compound.setInteger(TIER_TAG, rank.getTier());
 
                     if (rank.getTier() > 0) {
+                        compound.setString(NAME_TAG, instance.getName());
+
                         NBTTagList list = new NBTTagList();
+                        NBTTagCompound data = new NBTTagCompound();
 
                         for (String id : instance.getAffixes()) {
-                            NBTTagCompound tag = new NBTTagCompound();
-                            tag.setString("identifier", id);
-                            tag.setTag(DATA_TAG, instance.getAffixData(id));
-                            list.appendTag(tag);
+                            list.appendTag(new NBTTagString(id));
+                            data.setTag(id, instance.getAffixData(id));
                         }
                         compound.setTag(AFFIX_TAG, list);
-                        compound.setString(NAME_TAG, instance.getName());
+                        compound.setTag(DATA_TAG, data);
                     }
-                    compound.setInteger(TIER_TAG, rank.getTier());
                 }
                 return compound;
             }
@@ -111,9 +112,15 @@ public final class CapabilityChampionship {
                     instance.setRank(RankManager.getRankForTier(tier));
 
                     if (tier > 0) {
-                        NBTTagList list = compound.getTagList(AFFIX_TAG, Constants.NBT.TAG_COMPOUND);
+                        instance.setName(compound.getString(NAME_TAG));
+                        NBTTagList list = compound.getTagList(AFFIX_TAG, Constants.NBT.TAG_STRING);
                         Map<String, NBTTagCompound> affixes = Maps.newHashMap();
 
+                        list.forEach(id -> {
+                            String idString = ((NBTTagString)id).getString();
+                            NBTTagCompound data = compound.getCompoundTag(DATA_TAG).getCompoundTag(idString);
+                            affixes.put(idString, data);
+                        });
                         for (int i = 0; i < list.tagCount(); i++) {
                             NBTTagCompound tag = list.getCompoundTagAt(i);
                             String id = tag.getString("identifier");
@@ -124,7 +131,6 @@ public final class CapabilityChampionship {
                             }
                         }
                         instance.setAffixData(affixes);
-                        instance.setName(compound.getString(NAME_TAG));
                     }
                 }
             }
@@ -209,7 +215,7 @@ public final class CapabilityChampionship {
                     chp.setRank(rank);
 
                     if (rank.getTier() > 0) {
-                        Set<IAffix> affixes = ChampionHelper.generateAffixes(rank, living);
+                        Set<EnumAffix> affixes = ChampionHelper.generateAffixes(rank, living);
                         chp.setAffixes(affixes);
                         chp.setName(ChampionHelper.generateRandomName());
                         chp.getRank().applyGrowth(living);
@@ -245,7 +251,7 @@ public final class CapabilityChampionship {
                         chp.setRank(rank);
 
                         if (rank.getTier() > 0) {
-                            Set<IAffix> affixes = ChampionHelper.generateAffixes(rank, living);
+                            Set<EnumAffix> affixes = ChampionHelper.generateAffixes(rank, living);
                             chp.setAffixes(affixes);
                             chp.setName(ChampionHelper.generateRandomName());
                             chp.getRank().applyGrowth(living);

@@ -21,7 +21,6 @@ package c4.champions.common.util;
 
 import c4.champions.Champions;
 import c4.champions.common.affix.EnumAffix;
-import c4.champions.common.affix.IAffix;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.affix.filter.AffixFilterManager;
 import c4.champions.common.config.ConfigHandler;
@@ -52,6 +51,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Level;
 
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class ChampionHelper {
@@ -153,7 +153,7 @@ public class ChampionHelper {
         return prefix + suffix;
     }
 
-    public static Set<IAffix> generateAffixes(Rank rank, EntityLiving entityLivingIn) {
+    public static Set<EnumAffix> generateAffixes(Rank rank, EntityLiving entityLivingIn) {
         int size = rank.getAffixes();
         int tier = rank.getTier();
         if(CTChampion.affixAttributor != null){
@@ -166,7 +166,7 @@ public class ChampionHelper {
         BitSet unavailable = new BitSet(EnumAffix.length);
 
         //Handle preset affixes
-        Set<IAffix> output = AffixFilterManager.getPresetAffixesForEntity(entityLivingIn).stream()
+        Set<EnumAffix> output = AffixFilterManager.getPresetAffixesForEntity(entityLivingIn).stream()
             .filter(affix -> {
                 int ordinal = affix.ordinal();
                 if(unavailable.get(ordinal)){return false;}
@@ -176,7 +176,7 @@ public class ChampionHelper {
                 unavailable.or(affix.incompats);
                 return true;
             })
-            .collect(Collectors.toSet())
+            .collect(Collectors.toCollection(() -> EnumSet.noneOf(EnumAffix.class)));
         ;
         unavailable.or(AffixFilterManager.getIncompatAffixesForEntity(entityLivingIn));
 
