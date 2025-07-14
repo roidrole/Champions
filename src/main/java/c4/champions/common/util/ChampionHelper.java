@@ -58,12 +58,15 @@ public class ChampionHelper {
     public static Random rand = new Random();
 
     private static final Set<Integer> dimensions = Sets.newHashSet();
-    private static final Set<ResourceLocation> mobs = Sets.newHashSet();
+    private static final Set<Class<? extends Entity>> mobs = Sets.newHashSet();
     private static final Map<Integer, List<LootData>> drops = Maps.newHashMap();
-    private static final Map<ResourceLocation, Tuple<Integer, Integer>> champions = Maps.newHashMap();
+    private static final Map<Class<? extends Entity>, Tuple<Integer, Integer>> champions = Maps.newHashMap();
 
     public static boolean isValidChampion(final Entity entity) {
-        return entity instanceof EntityLiving && isValidEntity(entity);
+        if(mobs.isEmpty() || !(entity instanceof EntityLiving)){
+            return false;
+        }
+        return (ConfigHandler.mobPermission == ConfigHandler.PermissionMode.WHITELIST && mobs.contains(entity.getClass()));
     }
 
     public static Rank generateRank(final EntityLiving entityLivingIn) {
@@ -81,7 +84,7 @@ public class ChampionHelper {
         float chance;
 
         //Check for mobs which are always champions
-        Tuple<Integer, Integer> curated = champions.get(EntityList.getKey(entityLivingIn));
+        Tuple<Integer, Integer> curated = champions.get(entityLivingIn.getClass());
         if (curated != null){
             if(curated.getFirst() > 0 && curated.getSecond() == 0){
                 return ranks.get(curated.getFirst());
@@ -217,20 +220,6 @@ public class ChampionHelper {
         return false;
     }
 
-    public static boolean isValidEntity(Entity entity) {
-        ResourceLocation rl = EntityList.getKey(entity);
-
-        if (rl == null) {
-            return false;
-        } else if (mobs.isEmpty()) {
-            return true;
-        } else if (ConfigHandler.mobPermission == ConfigHandler.PermissionMode.BLACKLIST) {
-            return !mobs.contains(rl);
-        } else {
-            return mobs.contains(rl);
-        }
-    }
-
     public static boolean isValidDimension(int dim) {
 
         if (dimensions.isEmpty()) {
@@ -260,10 +249,9 @@ public class ChampionHelper {
         }
 
         for (String s : ConfigHandler.mobList) {
-            ResourceLocation rl = new ResourceLocation(s);
-
-            if (EntityList.getEntityNameList().contains(rl)) {
-                mobs.add(rl);
+            Class<? extends Entity> entityClass = EntityList.getClass(new ResourceLocation(s));
+            if (entityClass != null) {
+                mobs.add(entityClass);
             } else {
                 Champions.logger.log(Level.ERROR, "Invalid entity found in mob config! " + s);
             }
@@ -271,12 +259,12 @@ public class ChampionHelper {
 
         for (String s : ConfigHandler.championsList) {
             String[] args = s.split(";");
-            ResourceLocation rl = new ResourceLocation(args[0]);
+            Class<? extends Entity> entityClass = EntityList.getClass(new ResourceLocation(args[0]));
             int minTier = args.length > 1 ? Integer.parseInt(args[1]) : 0;
             int maxTier = args.length > 2 ? Integer.parseInt(args[2]) : 0;
 
-            if (EntityList.getEntityNameList().contains(rl)) {
-                champions.put(rl, new Tuple<>(minTier, maxTier));
+            if (entityClass != null) {
+                champions.put(entityClass, new Tuple<>(minTier, maxTier));
             } else {
                 Champions.logger.log(Level.ERROR, "Invalid entity found in champions list config! " + s);
             }
