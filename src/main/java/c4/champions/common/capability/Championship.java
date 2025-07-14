@@ -73,7 +73,6 @@ public class Championship implements IChampionship {
     public void setAffixes(Set<EnumAffix> affixes) {
         setAffixes(affixes.stream().map(EnumAffix::getIdentifier).collect(Collectors.toSet()), true);
     }
-    //53.9, 52.2
 
     @Override
     public ImmutableMap<String, NBTTagCompound> getAffixData() {
