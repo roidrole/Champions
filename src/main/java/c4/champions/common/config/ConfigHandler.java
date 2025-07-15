@@ -355,6 +355,10 @@ public class ConfigHandler {
             @Name("Vortex Strength")
             @Comment("The strength of the vortex pulling effect")
             public double strength = 0.05d;
+
+            @Name("Vortex only affects players")
+            @Comment("Should Vortex only affect players?")
+            public boolean affectPlayersOnly = true;
         }
     }
 

@@ -2,16 +2,20 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project does not adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
-This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
+This project uses MAJORMOD.MAJORAPI.MINOR.PATCH.
 
-## [1.0.11.11] - Unreleased
+## [1.1.0.0] - Unreleased
 ### Added
 - Config to (black/white)list tiers from dimensions
+- Config for Vortex to affect non-players
 - IMob requirement configurable
 - Rewrote CT integration (old one is deprecated)
   - Added rank attributor override
   - Added affix attributor override
-- General code cleanup
+
+### Changed
+- config/champions/affixes must be in default order ; default order might have changed
+- Rewrote a bunch of the internals, should perform better
 
 ## [1.0.11.10] - variable
 ### Original Edition - 2021.01.22

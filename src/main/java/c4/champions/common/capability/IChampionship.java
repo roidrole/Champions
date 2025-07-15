@@ -19,13 +19,14 @@
 
 package c4.champions.common.capability;
 
+import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.rank.Rank;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.util.BitSet;
+import java.util.EnumSet;
 import java.util.Map;
-import java.util.Set;
 
 public interface IChampionship {
 
@@ -33,16 +34,15 @@ public interface IChampionship {
 
     void setRank(Rank rank);
 
-    ImmutableSet<String> getAffixes();
+    BitSet getAffixes();
+
+    void setAffixes(EnumSet<EnumAffix> affixes);
+    void setAffixes(BitSet affixes);
 
     NBTTagCompound getAffixData(String identifier);
-
-    void setAffixData(String identifier, NBTTagCompound compound);
-
-    void setAffixes(Set<String> affixes);
-
     ImmutableMap<String, NBTTagCompound> getAffixData();
 
+    void setAffixData(String identifier, NBTTagCompound compound);
     void setAffixData(Map<String, NBTTagCompound> affixes);
 
     void setName(String name);

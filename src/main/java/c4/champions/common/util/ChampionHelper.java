@@ -20,8 +20,7 @@
 package c4.champions.common.util;
 
 import c4.champions.Champions;
-import c4.champions.common.affix.AffixRegistry;
-import c4.champions.common.affix.core.AffixBase;
+import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.affix.filter.AffixFilterManager;
 import c4.champions.common.config.ConfigHandler;
@@ -47,7 +46,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.silentchaos512.scalinghealth.api.ScalingHealthAPI;
 import org.apache.commons.lang3.ArrayUtils;
@@ -60,13 +58,19 @@ public class ChampionHelper {
 
     public static Random rand = new Random();
 
-    private static Set<Integer> dimensions = Sets.newHashSet();
-    private static Set<ResourceLocation> mobs = Sets.newHashSet();
-    private static Map<Integer, List<LootData>> drops = Maps.newHashMap();
-    private static Map<ResourceLocation, Tuple<Integer, Integer>> champions = Maps.newHashMap();
+    private static final Set<Integer> dimensions = Sets.newHashSet();
+    private static final Set<Class<? extends Entity>> mobs = Sets.newHashSet();
+    private static final Map<Integer, List<LootData>> drops = Maps.newHashMap();
+    private static final Map<Class<? extends Entity>, Tuple<Integer, Integer>> champions = Maps.newHashMap();
 
     public static boolean isValidChampion(final Entity entity) {
-        return entity instanceof EntityLiving && (ConfigHandler.peacefulChampions || entity instanceof IMob) && isValidEntity(entity);
+        if(!(entity instanceof EntityLiving || (!ConfigHandler.peacefulChampions && entity instanceof IMob))){
+            return false;
+        }
+        if(mobs.isEmpty()){
+            return true;
+        }
+        return (ConfigHandler.mobPermission == ConfigHandler.PermissionMode.WHITELIST && mobs.contains(entity.getClass()));
     }
 
     public static Rank generateRank(final EntityLiving entityLivingIn) {
@@ -84,7 +88,7 @@ public class ChampionHelper {
         float chance;
 
         //Check for mobs which are always champions
-        Tuple<Integer, Integer> curated = champions.get(EntityList.getKey(entityLivingIn));
+        Tuple<Integer, Integer> curated = champions.get(entityLivingIn.getClass());
         if (curated != null){
             if(curated.getFirst() > 0 && curated.getSecond() == 0){
                 return ranks.get(curated.getFirst());
@@ -155,148 +159,57 @@ public class ChampionHelper {
         return prefix + suffix;
     }
 
-    public static Set<String> generateAffixes(Rank rank, EntityLiving entityLivingIn, String... presets) {
+    public static EnumSet<EnumAffix> generateAffixes(Rank rank, EntityLiving entityLivingIn) {
         int size = rank.getAffixes();
         int tier = rank.getTier();
         if(CTChampion.affixAttributor != null){
-            return Sets.newHashSet(Arrays.asList(CTChampion.affixAttributor.apply(entityLivingIn, tier, size)));
+            return Arrays.stream(CTChampion.affixAttributor.apply(entityLivingIn, tier, size))
+                .map(name -> EnumAffix.valueOf(name.toUpperCase())).
+                collect(Collectors.toCollection(() -> EnumSet.noneOf(EnumAffix.class)))
+            ;
         }
-        Set<String> affixList = Sets.newHashSet();
-        //Can't directly set a new HashMap() because arrays are not copied
-        //Could I use a bitmap of enum ordinals instead?
-        Map<AffixCategory, Set<String>> categoryMap = AffixRegistry.getCategoryMap().entrySet().stream().collect(
-            Collectors.toMap(Map.Entry::getKey, e -> Sets.newHashSet(e.getValue())));
 
+        //Handle preset affixes
+        EnumSet<EnumAffix> output = AffixFilterManager.getPresetAffixesForEntity(entityLivingIn);
+        //Includes incompat for preset affixes
+        BitSet unavailable = AffixFilterManager.getIncompatAffixesForEntity(entityLivingIn);
 
-        //Handle any preset affixes
-        Set<String> curatedPresets = Sets.newHashSet(presets);
-        curatedPresets.addAll(AffixFilterManager.getPresetAffixesForEntity(entityLivingIn));
-        curatedPresets.forEach(s -> {
-            AffixBase aff = AffixRegistry.getAffix(s);
+        Random random = entityLivingIn.world.rand;
+        while(output.size() < size && unavailable.cardinality() < EnumAffix.length){
 
-            if (aff != null) {
-                AffixCategory cat = aff.getCategory();
-                Set<String> availableAffixes = categoryMap.get(cat);
-
-                if (availableAffixes != null && availableAffixes.contains(s)) {
-                    availableAffixes.remove(s);
-                    boolean added = false;
-                    AffixBase affix = AffixRegistry.getAffix(s);
-                    if (affix != null) {
-                        boolean flag = true;
-                        //Check for incompatible affixes
-                        for (String s1 : affixList) {
-                            if (!affix.isCompatibleWith(AffixRegistry.getAffix(s1))) {
-                                flag = false;
-                                break;
-                            }
-                        }
-
-                        if (flag) {
-                            affixList.add(s);
-                            added = true;
-                        }
-                    }
-
-                    if (added && (availableAffixes.isEmpty() || cat != AffixCategory.OFFENSE)) {
-                        categoryMap.remove(cat);
-                    }
-                }
+            EnumAffix affix = EnumAffix.getAffix(randomClearBit(unavailable, EnumAffix.length, random));
+            if(!AffixFilterManager.isValidTier(affix, tier)){
+                unavailable.set(affix.ordinal());
+                continue;
             }
-        });
-
-
-        while (!categoryMap.isEmpty() && affixList.size() < size) {
-            //Get random category
-            AffixCategory[] categories = categoryMap.keySet().toArray(new AffixCategory[0]);
-            AffixCategory randomCategory = categories[rand.nextInt(categories.length)];
-            //Get all affixes for that category
-            Set<String> affixes = categoryMap.get(randomCategory);
-
-            if (!affixes.isEmpty()) {
-                //Get random affix
-                int element = rand.nextInt(affixes.size());
-                Iterator<String> iter = affixes.iterator();
-
-                for (int i = 0; i < element; i++) {
-                    iter.next();
-                }
-                String id = iter.next();
-                boolean added = false;
-
-                //Filter through for validity
-                AffixBase affix = AffixRegistry.getAffix(id);
-
-                if (affix != null && affix.canApply(entityLivingIn) && AffixFilterManager.isValidAffix(affix,
-                        entityLivingIn, tier)) {
-                    boolean flag = true;
-                    //Check for incompatible affixes
-                    for (String s : affixList) {
-
-                        if (!affix.isCompatibleWith(AffixRegistry.getAffix(s))) {
-                            flag = false;
-                            break;
-                        }
-                    }
-
-                    if (flag) {
-                        affixList.add(id);
-                        added = true;
-                    }
-                }
-
-                //Remove entire category only if the affix was actually added and the category is limited
-                if (added && randomCategory != AffixCategory.OFFENSE) {
-                    categoryMap.remove(randomCategory);
-                } //Otherwise, remove the affix from the running set and then remove the category if it's now empty
-                else {
-                    affixes.remove(id);
-
-                    if (affixes.isEmpty()) {
-                        categoryMap.remove(randomCategory);
-                    }
-                }
+            if(affix.getCategory() != AffixCategory.OFFENSE){
+                unavailable.or(EnumAffix.categorySetMap.get(affix.getCategory()));
             }
+            unavailable.or(affix.incompats);
+            output.add(affix);
         }
-        return affixList;
+        return output;
     }
 
     public static boolean isElite(Rank rank) {
         return rank != null && rank.getTier() > 0;
     }
 
-    private static boolean nearActiveBeacon(final EntityLiving entityLivingIn) {
+    private static boolean nearActiveBeacon(final EntityLiving entity) {
         int range = ConfigHandler.beaconRange;
-
         if (range <= 0) {
             return false;
         }
-
-        for (TileEntity te : entityLivingIn.world.tickableTileEntities) {
-            BlockPos pos = te.getPos();
-
-            if (entityLivingIn.getDistanceSq(pos) <= range * range && te instanceof TileEntityBeacon) {
-
-                if (((TileEntityBeacon)te).isComplete) {
-                    return true;
-                }
+        range = range * range;
+        for (TileEntity te : entity.world.tickableTileEntities) {
+            if(!(te instanceof  TileEntityBeacon)){continue;}
+            TileEntityBeacon beacon = (TileEntityBeacon)te;
+            if(!beacon.isComplete){continue;}
+            if(entity.getDistanceSqToCenter(beacon.getPos()) <= range){
+                return true;
             }
         }
         return false;
-    }
-
-    public static boolean isValidEntity(Entity entity) {
-        ResourceLocation rl = EntityList.getKey(entity);
-
-        if (rl == null) {
-            return false;
-        } else if (mobs.isEmpty()) {
-            return true;
-        } else if (ConfigHandler.mobPermission == ConfigHandler.PermissionMode.BLACKLIST) {
-            return !mobs.contains(rl);
-        } else {
-            return mobs.contains(rl);
-        }
     }
 
     public static boolean isValidDimension(int dim) {
@@ -328,10 +241,9 @@ public class ChampionHelper {
         }
 
         for (String s : ConfigHandler.mobList) {
-            ResourceLocation rl = new ResourceLocation(s);
-
-            if (EntityList.getEntityNameList().contains(rl)) {
-                mobs.add(rl);
+            Class<? extends Entity> entityClass = EntityList.getClass(new ResourceLocation(s));
+            if (entityClass != null) {
+                mobs.add(entityClass);
             } else {
                 Champions.logger.log(Level.ERROR, "Invalid entity found in mob config! " + s);
             }
@@ -339,12 +251,12 @@ public class ChampionHelper {
 
         for (String s : ConfigHandler.championsList) {
             String[] args = s.split(";");
-            ResourceLocation rl = new ResourceLocation(args[0]);
+            Class<? extends Entity> entityClass = EntityList.getClass(new ResourceLocation(args[0]));
             int minTier = args.length > 1 ? Integer.parseInt(args[1]) : 0;
             int maxTier = args.length > 2 ? Integer.parseInt(args[2]) : 0;
 
-            if (EntityList.getEntityNameList().contains(rl)) {
-                champions.put(rl, new Tuple<>(minTier, maxTier));
+            if (entityClass != null) {
+                champions.put(entityClass, new Tuple<>(minTier, maxTier));
             } else {
                 Champions.logger.log(Level.ERROR, "Invalid entity found in champions list config! " + s);
             }
@@ -451,11 +363,22 @@ public class ChampionHelper {
         return drops;
     }
 
+    public static int randomClearBit(BitSet set, int size, Random rand){
+        //Using nextClearBit would be introducing bias towards lines of numbers
+        //I probably don't need a counter here, since I'm doing security upstream
+        while (true){
+            int index = rand.nextInt(size);
+            if(!set.get(index)){
+                return index;
+            }
+        }
+    }
+
     private static class LootData {
 
-        private ItemStack stack;
-        private boolean enchant;
-        private int weight;
+        private final ItemStack stack;
+        private final boolean enchant;
+        private final int weight;
 
         LootData(ItemStack stack, boolean enchant, int weight) {
             this.stack = stack;

@@ -67,8 +67,8 @@ public class AffixVortex extends AffixBase {
                     target.motionY += vec.y;
                     target.motionZ += vec.z;
 
-                    if (target instanceof EntityPlayer) {
-                        ((EntityPlayer) target).velocityChanged = true;
+                    if (!ConfigHandler.affix.vortex.affectPlayersOnly || target instanceof EntityPlayer) {
+                        target.velocityChanged = true;
                     }
                 }
             }

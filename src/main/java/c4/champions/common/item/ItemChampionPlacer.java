@@ -20,14 +20,12 @@
 package c4.champions.common.item;
 
 import c4.champions.Champions;
-import c4.champions.common.affix.AffixRegistry;
-import c4.champions.common.affix.IAffix;
+import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.capability.IChampionship;
 import c4.champions.common.rank.Rank;
 import c4.champions.common.rank.RankManager;
 import c4.champions.common.util.ChampionHelper;
-import com.google.common.collect.Sets;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -40,8 +38,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -49,14 +45,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.BitSet;
 import java.util.List;
-import java.util.Set;
 
 public class ItemChampionPlacer extends Item {
 
@@ -72,24 +67,23 @@ public class ItemChampionPlacer extends Item {
 
         if (nbttagcompound != null && nbttagcompound.hasKey("ChampionInfo", 10)) {
             NBTTagCompound compound = nbttagcompound.getCompoundTag("ChampionInfo");
-            int tier = compound.getInteger("tier");
+            int tier = compound.getInteger(CapabilityChampionship.TIER_TAG);
             tooltip.add(I18n.format(Champions.MODID + ".champion_egg.tooltip.tier", tier));
-            NBTTagList tagList = compound.getTagList("affixes", Constants.NBT.TAG_STRING);
 
-            for (int i = 0; i < tagList.tagCount(); i++) {
-                tooltip.add(I18n.format(Champions.MODID + ".affix." + tagList.getStringTagAt(i)));
-            }
+            BitSet.valueOf(new long[]{compound.getLong(CapabilityChampionship.AFFIX_TAG)}).stream().forEach(ordinal ->
+                tooltip.add(I18n.format(Champions.MODID + ".affix."+EnumAffix.getAffix(ordinal).name()))
+            );
         }
     }
 
     @Nonnull
     @Override
     public String getItemStackDisplayName(@Nonnull ItemStack stack) {
-        String s = (net.minecraft.util.text.translation.I18n.translateToLocal(this.getTranslationKey() + ".name")).trim();
+        String s = (I18n.format(this.getTranslationKey() + ".name")).trim();
         String s1 = EntityList.getTranslationName(ItemMonsterPlacer.getNamedIdFrom(stack));
 
         if (s1 != null) {
-            s = s + " " + net.minecraft.util.text.translation.I18n.translateToLocal("entity." + s1 + ".name");
+            s = s + " " + I18n.format("entity." + s1 + ".name");
         }
         return s;
     }
@@ -238,56 +232,36 @@ public class ItemChampionPlacer extends Item {
 
                 if (chp != null) {
                     NBTTagCompound compound = nbttagcompound.getCompoundTag("ChampionInfo");
-                    Rank rank = RankManager.getRankForTier(compound.getInteger("tier"));
+                    Rank rank = RankManager.getRankForTier(compound.getInteger(CapabilityChampionship.TIER_TAG));
                     chp.setRank(rank);
 
                     if (rank.getTier() > 0) {
 
-                        Set<String> affixes = Sets.newHashSet();
-                        NBTTagList tagList = compound.getTagList("affixes", Constants.NBT.TAG_STRING);
-
-                        for (int i = 0; i < tagList.tagCount(); i++) {
-                            String affix = tagList.getStringTagAt(i);
-
-                            if (AffixRegistry.getAffix(affix) != null) {
-                                affixes.add(affix);
-                            }
-                        }
-
-                        if (affixes.isEmpty()) {
+                        if(compound.getLong(CapabilityChampionship.AFFIX_TAG) == 0){
                             chp.setAffixes(ChampionHelper.generateAffixes(rank, targetEntity));
                         } else {
-                            chp.setAffixes(affixes);
+                            chp.setAffixes(BitSet.valueOf(new long[]{compound.getLong(CapabilityChampionship.AFFIX_TAG)}));
                         }
                         chp.setName(ChampionHelper.generateRandomName());
                         chp.getRank().applyGrowth(targetEntity);
 
-                        for (String s : chp.getAffixes()) {
-                            IAffix affix = AffixRegistry.getAffix(s);
-
-                            if (affix != null) {
-                                affix.onInitialSpawn(targetEntity, chp);
-                            }
-                        }
+                        chp.getAffixes().stream().forEach(ordinal ->
+                            EnumAffix.getAffix(ordinal).onInitialSpawn(targetEntity, chp)
+                        );
                     }
                 }
             }
         }
     }
 
-    public static void applyEntityInfoToItemStack(ItemStack stack, ResourceLocation entityId, int tier, Set<String> affixes) {
+    public static void applyEntityInfoToItemStack(ItemStack stack, ResourceLocation entityId, int tier, BitSet affixes) {
         NBTTagCompound nbttagcompound = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
         NBTTagCompound nbttagcompound1 = new NBTTagCompound();
         nbttagcompound1.setString("id", entityId.toString());
         nbttagcompound.setTag("EntityTag", nbttagcompound1);
         NBTTagCompound nbttagcompound2 = new NBTTagCompound();
-        nbttagcompound2.setInteger("tier", tier);
-        NBTTagList taglist = new NBTTagList();
-
-        for (String affix : affixes) {
-            taglist.appendTag(new NBTTagString(affix));
-        }
-        nbttagcompound2.setTag("affixes", taglist);
+        nbttagcompound2.setInteger(CapabilityChampionship.TIER_TAG, tier);
+        nbttagcompound2.setLong(CapabilityChampionship.AFFIX_TAG, affixes.toLongArray()[0]);
         nbttagcompound.setTag("ChampionInfo", nbttagcompound2);
         stack.setTagCompound(nbttagcompound);
     }

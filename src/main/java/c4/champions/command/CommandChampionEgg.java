@@ -20,11 +20,9 @@
 package c4.champions.command;
 
 import c4.champions.Champions;
-import c4.champions.common.affix.AffixRegistry;
-import c4.champions.common.affix.core.AffixBase;
+import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.init.ChampionsRegistry;
 import c4.champions.common.item.ItemChampionPlacer;
-import com.google.common.collect.Sets;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -41,9 +39,9 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 public class CommandChampionEgg extends CommandBase {
 
@@ -88,16 +86,15 @@ public class CommandChampionEgg extends CommandBase {
         } catch (NumberFormatException e) {
             throw new CommandException(Champions.MODID + ".commands.spawnchampion.tierError", args[1]);
         }
-        Set<String> argAffix = Sets.newHashSet();
+        BitSet argAffix = new BitSet(EnumAffix.length);
 
         for (int i = 2; i < args.length; i++) {
-            String affix = args[i];
-            AffixBase affixBase = AffixRegistry.getAffix(affix);
+            EnumAffix affix = EnumAffix.getAffix(args[i]);
 
-            if (affixBase == null) {
+            if (affix == null) {
                 throw new CommandException(Champions.MODID + ".commands.spawnchampion.affixError", args[i]);
             }
-            argAffix.add(args[i]);
+            argAffix.set(affix.ordinal());
         }
 
         if (sender.getCommandSenderEntity() instanceof EntityPlayer) {

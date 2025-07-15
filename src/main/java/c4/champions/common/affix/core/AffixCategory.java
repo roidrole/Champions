@@ -22,5 +22,7 @@ package c4.champions.common.affix.core;
 public enum  AffixCategory {
     CC,
     OFFENSE,
-    DEFENSE
+    DEFENSE;
+
+    public static final AffixCategory[] values = values();
 }
