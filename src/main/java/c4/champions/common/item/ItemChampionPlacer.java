@@ -67,10 +67,10 @@ public class ItemChampionPlacer extends Item {
 
         if (nbttagcompound != null && nbttagcompound.hasKey("ChampionInfo", 10)) {
             NBTTagCompound compound = nbttagcompound.getCompoundTag("ChampionInfo");
-            int tier = compound.getInteger("tier");
+            int tier = compound.getInteger(CapabilityChampionship.TIER_TAG);
             tooltip.add(I18n.format(Champions.MODID + ".champion_egg.tooltip.tier", tier));
 
-            BitSet.valueOf(new long[]{compound.getLong("affixes")}).stream().forEach(ordinal ->
+            BitSet.valueOf(new long[]{compound.getLong(CapabilityChampionship.AFFIX_TAG)}).stream().forEach(ordinal ->
                 tooltip.add(I18n.format(Champions.MODID + ".affix."+EnumAffix.getAffix(ordinal).name()))
             );
         }
@@ -232,15 +232,15 @@ public class ItemChampionPlacer extends Item {
 
                 if (chp != null) {
                     NBTTagCompound compound = nbttagcompound.getCompoundTag("ChampionInfo");
-                    Rank rank = RankManager.getRankForTier(compound.getInteger("tier"));
+                    Rank rank = RankManager.getRankForTier(compound.getInteger(CapabilityChampionship.TIER_TAG));
                     chp.setRank(rank);
 
                     if (rank.getTier() > 0) {
 
-                        if(compound.getLong("affixes") == 0){
+                        if(compound.getLong(CapabilityChampionship.AFFIX_TAG) == 0){
                             chp.setAffixes(ChampionHelper.generateAffixes(rank, targetEntity));
                         } else {
-                            chp.setAffixes(BitSet.valueOf(new long[]{compound.getLong("affixes")}));
+                            chp.setAffixes(BitSet.valueOf(new long[]{compound.getLong(CapabilityChampionship.AFFIX_TAG)}));
                         }
                         chp.setName(ChampionHelper.generateRandomName());
                         chp.getRank().applyGrowth(targetEntity);
@@ -260,8 +260,8 @@ public class ItemChampionPlacer extends Item {
         nbttagcompound1.setString("id", entityId.toString());
         nbttagcompound.setTag("EntityTag", nbttagcompound1);
         NBTTagCompound nbttagcompound2 = new NBTTagCompound();
-        nbttagcompound2.setInteger("tier", tier);
-        nbttagcompound2.setLong("affixes", affixes.toLongArray()[0]);
+        nbttagcompound2.setInteger(CapabilityChampionship.TIER_TAG, tier);
+        nbttagcompound2.setLong(CapabilityChampionship.AFFIX_TAG, affixes.toLongArray()[0]);
         nbttagcompound.setTag("ChampionInfo", nbttagcompound2);
         stack.setTagCompound(nbttagcompound);
     }

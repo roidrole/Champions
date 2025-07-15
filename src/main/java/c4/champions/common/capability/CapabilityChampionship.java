@@ -55,10 +55,10 @@ public final class CapabilityChampionship {
     public static final EnumFacing DEFAULT_FACING = null;
     public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "championship");
 
-    private static final String AFFIX_TAG = "affixes";
-    private static final String TIER_TAG = "tier";
-    private static final String DATA_TAG = "data";
-    private static final String NAME_TAG = "name";
+    public static final String AFFIX_TAG = "affixes";
+    public static final String TIER_TAG = "tier";
+    public static final String DATA_TAG = "data";
+    public static final String NAME_TAG = "name";
 
     @Nullable
     @SuppressWarnings("ConstantConditions")
