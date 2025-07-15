@@ -121,11 +121,16 @@ public class ConfigHandler {
     @Comment("Settings for integration with the Scaling Health mod")
     public static ScalingHealth scalingHealth = new ScalingHealth();
 
+    @SuppressWarnings("staticinnerclass")
     public static class Affix {
 
         @Name("Maximum Ability Range")
         @Comment("Set the maximum distance that mobs can use their targeted abilities from, 0 to disable")
         public int abilityRange = 0;
+
+        @Name("Shielding")
+        @Comment("Settings for the Shielding affix")
+        public Shielding shielding = new Shielding();
 
         @Name("Adaptable")
         @Comment("Settings for the Adaptable affix")
@@ -187,6 +192,16 @@ public class ConfigHandler {
         @Comment("Settings for the Vortex affix")
         public Vortex vortex = new Vortex();
 
+        public class Shielding {
+            @Name("Chance to deactivate")
+            @Comment("If shielding, the chance, every second, to deactivate the shield")
+            public float deactivationChance = 0.5f;
+
+
+            @Name("Chance to activate")
+            @Comment("If not shielding, the chance, every second, to activate the shield")
+            public float activationChance = 0.5f;
+        }
         public class Adaptable {
 
             @Name("Damage Reduction Increment")
@@ -430,6 +445,7 @@ public class ConfigHandler {
         WHITELIST
     }
 
+    @SuppressWarnings("unused")
     public enum LootSource {
         LOOT_TABLE,
         CONFIG,
@@ -437,6 +453,7 @@ public class ConfigHandler {
     }
 
     @Mod.EventBusSubscriber(modid = Champions.MODID)
+    @SuppressWarnings("unused")
     private static class ConfigEventHandler {
 
         @SubscribeEvent

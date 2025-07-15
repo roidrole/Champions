@@ -23,6 +23,7 @@ import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.affix.core.AffixNBT;
 import c4.champions.common.capability.IChampionship;
+import c4.champions.common.config.ConfigHandler;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
@@ -40,9 +41,13 @@ public class AffixShielding extends AffixBase {
         AffixNBT.Boolean shielding = AffixNBT.getData(cap, getIdentifier(), AffixNBT.Boolean.class);
 
         if (!entity.world.isRemote) {
-
-            if (entity.ticksExisted % 40 == 0 && entity.getRNG().nextFloat() < 0.5f) {
-                shielding.mode = !shielding.mode;
+            if(entity.ticksExisted % 40 != 0){return;}
+            float roll = entity.getRNG().nextFloat();
+            if(shielding.mode && roll < ConfigHandler.affix.shielding.deactivationChance){
+                shielding.mode = false;
+                shielding.saveData(entity);
+            } else if(roll < ConfigHandler.affix.shielding.activationChance) {
+                shielding.mode = true;
                 shielding.saveData(entity);
             }
         } else if (shielding.mode) {
@@ -53,13 +58,20 @@ public class AffixShielding extends AffixBase {
     }
 
     @Override
-    public void onAttacked(EntityLiving entity, IChampionship cap, DamageSource source, float amount, LivingAttackEvent
-                           evt) {
+    public void onAttacked(EntityLiving entity, IChampionship cap, DamageSource source, float amount, LivingAttackEvent evt) {
         AffixNBT.Boolean shielding = AffixNBT.getData(cap, getIdentifier(), AffixNBT.Boolean.class);
 
         if (shielding.mode) {
-            entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents
-                    .ENTITY_PLAYER_ATTACK_NODAMAGE, entity.getSoundCategory(), 1.0F, 1.0F);
+            entity.world.playSound(
+                null,
+                entity.posX,
+                entity.posY,
+                entity.posZ,
+                SoundEvents.ENTITY_PLAYER_ATTACK_NODAMAGE,
+                entity.getSoundCategory(),
+                1.0F,
+                1.0F
+            );
             evt.setCanceled(true);
         }
     }
