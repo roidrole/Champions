@@ -44,7 +44,7 @@ public class AffixLively extends AffixBase {
         if (!entity.world.isRemote) {
             AffixNBT.Integer lastAttackTime = AffixNBT.getData(cap, this.getIdentifier(), AffixNBT.Integer.class);
 
-            if ((lastAttackTime.num + ConfigHandler.affix.lively.cooldown * 20) < entity.world.getTotalWorldTime()
+            if ((lastAttackTime.num + ConfigHandler.affix.lively.cooldown * 20) < (int)entity.world.getTotalWorldTime()
                     && entity.ticksExisted % 20 == 0) {
                 double healAmount = ConfigHandler.affix.lively.healAmount;
 

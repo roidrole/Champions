@@ -21,9 +21,6 @@ package c4.champions.common.capability;
 
 import c4.champions.Champions;
 import c4.champions.common.affix.EnumAffix;
-import c4.champions.common.affix.IAffix;
-import c4.champions.common.affix.filter.AffixFilter;
-import c4.champions.common.affix.filter.AffixFilterManager;
 import c4.champions.common.config.ConfigHandler;
 import c4.champions.common.rank.Rank;
 import c4.champions.common.rank.RankManager;
@@ -31,18 +28,14 @@ import c4.champions.common.util.ChampionHelper;
 import c4.champions.integrations.gamestages.ChampionStages;
 import c4.champions.network.NetworkHandler;
 import c4.champions.network.PacketSyncAffix;
-import com.google.common.collect.Maps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.*;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -51,8 +44,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.Set;
+import java.util.BitSet;
+import java.util.EnumSet;
 
 public final class CapabilityChampionship {
 
@@ -88,15 +81,9 @@ public final class CapabilityChampionship {
 
                     if (rank.getTier() > 0) {
                         compound.setString(NAME_TAG, instance.getName());
-
-                        NBTTagList list = new NBTTagList();
+                        compound.setLong(AFFIX_TAG, instance.getAffixes().toLongArray()[0]);
                         NBTTagCompound data = new NBTTagCompound();
-
-                        for (String id : instance.getAffixes()) {
-                            list.appendTag(new NBTTagString(id));
-                            data.setTag(id, instance.getAffixData(id));
-                        }
-                        compound.setTag(AFFIX_TAG, list);
+                        instance.getAffixData().forEach(data::setTag);
                         compound.setTag(DATA_TAG, data);
                     }
                 }
@@ -113,24 +100,8 @@ public final class CapabilityChampionship {
 
                     if (tier > 0) {
                         instance.setName(compound.getString(NAME_TAG));
-                        NBTTagList list = compound.getTagList(AFFIX_TAG, Constants.NBT.TAG_STRING);
-                        Map<String, NBTTagCompound> affixes = Maps.newHashMap();
-
-                        list.forEach(id -> {
-                            String idString = ((NBTTagString)id).getString();
-                            NBTTagCompound data = compound.getCompoundTag(DATA_TAG).getCompoundTag(idString);
-                            affixes.put(idString, data);
-                        });
-                        for (int i = 0; i < list.tagCount(); i++) {
-                            NBTTagCompound tag = list.getCompoundTagAt(i);
-                            String id = tag.getString("identifier");
-                            AffixFilter filter = AffixFilterManager.getAffixFilter(id);
-
-                            if (filter != null && filter.isEnabled()) {
-                                affixes.put(tag.getString("identifier"), tag.getCompoundTag(DATA_TAG));
-                            }
-                        }
-                        instance.setAffixData(affixes);
+                        instance.setAffixes(BitSet.valueOf(new long[]{compound.getLong(AFFIX_TAG)}));
+                        compound.getCompoundTag(DATA_TAG).tagMap.forEach((key, value) -> instance.setAffixData(key, (NBTTagCompound) value));
                     }
                 }
             }
@@ -215,7 +186,7 @@ public final class CapabilityChampionship {
                     chp.setRank(rank);
 
                     if (rank.getTier() > 0) {
-                        Set<EnumAffix> affixes = ChampionHelper.generateAffixes(rank, living);
+                        EnumSet<EnumAffix> affixes = ChampionHelper.generateAffixes(rank, living);
                         chp.setAffixes(affixes);
                         chp.setName(ChampionHelper.generateRandomName());
                         chp.getRank().applyGrowth(living);
@@ -251,18 +222,14 @@ public final class CapabilityChampionship {
                         chp.setRank(rank);
 
                         if (rank.getTier() > 0) {
-                            Set<EnumAffix> affixes = ChampionHelper.generateAffixes(rank, living);
+                            EnumSet<EnumAffix> affixes = ChampionHelper.generateAffixes(rank, living);
                             chp.setAffixes(affixes);
                             chp.setName(ChampionHelper.generateRandomName());
                             chp.getRank().applyGrowth(living);
 
-                            for (String s : chp.getAffixes()) {
-                                IAffix affix = EnumAffix.getAffix(s);
-
-                                if (affix != null) {
-                                    affix.onInitialSpawn(living, chp);
-                                }
-                            }
+                            chp.getAffixes().stream().forEach(ordinal ->
+                                EnumAffix.getAffix(ordinal).onInitialSpawn(living, chp)
+                            );
                         }
                     }
                 }
@@ -280,8 +247,7 @@ public final class CapabilityChampionship {
                     IChampionship chp = getChampionship((EntityLiving) entity);
 
                     if (chp != null && ChampionHelper.isElite(chp.getRank())) {
-                        NetworkHandler.INSTANCE.sendTo(new PacketSyncAffix(entity.getEntityId(),
-                                chp.getRank().getTier(), chp.getAffixData(), chp.getName()), playerMP);
+                        NetworkHandler.INSTANCE.sendTo(new PacketSyncAffix(entity.getEntityId(), chp), playerMP);
                     }
                 }
             }

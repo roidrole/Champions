@@ -33,6 +33,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
+import java.util.BitSet;
 import java.util.Map;
 
 public class PacketSyncAffix implements IMessage {
@@ -43,14 +44,16 @@ public class PacketSyncAffix implements IMessage {
     private int tier;
     private Map<String, NBTTagCompound> affixData;
     private int num;
+    private long affixes;
     private String name;
 
-    public PacketSyncAffix(int entityId, int tier, Map<String, NBTTagCompound> affixData, String name) {
+    public PacketSyncAffix(int entityId, IChampionship chp) {
         this.entityId = entityId;
-        this.tier = tier;
-        this.affixData = affixData;
-        this.num = affixData.size();
-        this.name = name;
+        this.tier = chp.getRank().getTier();
+        this.affixData = chp.getAffixData();
+        this.num = chp.getAffixData().size();
+        this.affixes = chp.getAffixes().toLongArray()[0];
+        this.name = chp.getName();
     }
 
     @Override
@@ -58,6 +61,7 @@ public class PacketSyncAffix implements IMessage {
         this.entityId = buf.readInt();
         this.tier = buf.readInt();
         this.num = buf.readInt();
+        this.affixes = buf.readLong();
         Map<String, NBTTagCompound> data = Maps.newHashMap();
         for (int i = 0; i < this.num; i++) {
             data.putIfAbsent(ByteBufUtils.readUTF8String(buf), ByteBufUtils.readTag(buf));
@@ -71,6 +75,7 @@ public class PacketSyncAffix implements IMessage {
         buf.writeInt(entityId);
         buf.writeInt(tier);
         buf.writeInt(num);
+        buf.writeLong(affixes);
         for (Map.Entry<String, NBTTagCompound> entry : affixData.entrySet()) {
             ByteBufUtils.writeUTF8String(buf, entry.getKey());
             ByteBufUtils.writeTag(buf, entry.getValue());
@@ -89,6 +94,7 @@ public class PacketSyncAffix implements IMessage {
                 if (chp != null) {
                     chp.setRank(RankManager.getRankForTier(message.tier));
                     chp.setAffixData(message.affixData);
+                    chp.setAffixes(BitSet.valueOf(new long[]{message.affixes}));
                     chp.setName(message.name);
                 }
             });

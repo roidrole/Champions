@@ -158,37 +158,25 @@ public class ChampionHelper {
         return prefix + suffix;
     }
 
-    public static Set<EnumAffix> generateAffixes(Rank rank, EntityLiving entityLivingIn) {
+    public static EnumSet<EnumAffix> generateAffixes(Rank rank, EntityLiving entityLivingIn) {
         int size = rank.getAffixes();
         int tier = rank.getTier();
         if(CTChampion.affixAttributor != null){
             return Arrays.stream(CTChampion.affixAttributor.apply(entityLivingIn, tier, size))
                 .map(name -> EnumAffix.valueOf(name.toUpperCase())).
-                collect(Collectors.toSet())
+                collect(Collectors.toCollection(() -> EnumSet.noneOf(EnumAffix.class)))
             ;
         }
 
-        BitSet unavailable = new BitSet(EnumAffix.length);
-
         //Handle preset affixes
-        Set<EnumAffix> output = AffixFilterManager.getPresetAffixesForEntity(entityLivingIn).stream()
-            .filter(affix -> {
-                int ordinal = affix.ordinal();
-                if(unavailable.get(ordinal)){return false;}
-                if(affix.getCategory() != AffixCategory.OFFENSE){
-                    unavailable.or(EnumAffix.categorySetMap.get(affix.getCategory()));
-                }
-                unavailable.or(affix.incompats);
-                return true;
-            })
-            .collect(Collectors.toCollection(() -> EnumSet.noneOf(EnumAffix.class)))
-        ;
-        unavailable.or(AffixFilterManager.getIncompatAffixesForEntity(entityLivingIn));
+        EnumSet<EnumAffix> output = AffixFilterManager.getPresetAffixesForEntity(entityLivingIn);
+        //Includes incompat for preset affixes
+        BitSet unavailable = AffixFilterManager.getIncompatAffixesForEntity(entityLivingIn);
 
         Random random = entityLivingIn.world.rand;
         while(output.size() < size && unavailable.cardinality() < EnumAffix.length){
 
-            EnumAffix affix = EnumAffix.values[randomClearBit(unavailable, EnumAffix.length, random)];
+            EnumAffix affix = EnumAffix.getAffix(randomClearBit(unavailable, EnumAffix.length, random));
             if(!AffixFilterManager.isValidTier(affix, tier)){
                 unavailable.set(affix.ordinal());
                 continue;

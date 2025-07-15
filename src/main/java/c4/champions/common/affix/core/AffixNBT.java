@@ -59,11 +59,8 @@ public abstract class AffixNBT {
             WorldServer world = (WorldServer)living.world;
 
             for (EntityPlayer player : world.getEntityTracker().getTrackingPlayers(living)) {
-
                 if (player instanceof EntityPlayerMP && championship.getRank() != null) {
-                    NetworkHandler.INSTANCE.sendTo(new PacketSyncAffix(living.getEntityId(),
-                            championship.getRank().getTier(), championship.getAffixData(), championship.getName()),
-                            (EntityPlayerMP)player);
+                    NetworkHandler.INSTANCE.sendTo(new PacketSyncAffix(living.getEntityId(), championship), (EntityPlayerMP)player);
                 }
             }
         }
@@ -76,7 +73,7 @@ public abstract class AffixNBT {
             data = clazz.newInstance();
             data.readData(championship, affix);
         } catch (IllegalAccessException | InstantiationException e) {
-            Champions.logger.log(Level.ERROR, "Error reading data from class " + clazz.toString());
+            Champions.logger.log(Level.ERROR, "Error reading data from class " + clazz);
         }
         return data;
     }

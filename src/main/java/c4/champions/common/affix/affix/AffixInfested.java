@@ -26,7 +26,6 @@ import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.capability.IChampionship;
 import c4.champions.common.config.ConfigHandler;
 import c4.champions.common.rank.RankManager;
-import com.google.common.collect.Lists;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -36,15 +35,11 @@ import net.minecraft.entity.monster.EntityEndermite;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
-import java.util.List;
-
 public class AffixInfested extends AffixBase {
-
     public AffixInfested() {
         super("infested", AffixCategory.OFFENSE);
     }
@@ -84,25 +79,21 @@ public class AffixInfested extends AffixBase {
             if (source.getTrueSource() instanceof EntityLivingBase) {
                 target = (EntityLivingBase) source.getTrueSource();
             }
-            boolean isEnder = false;
+            boolean isEnder = entity instanceof EntityEnderman
+             || entity instanceof EntityShulker
+             || entity instanceof EntityEndermite
+             || entity instanceof EntityDragon
+            ;
 
-            if (entity instanceof EntityEnderman || entity instanceof EntityShulker || entity instanceof EntityEndermite || entity instanceof EntityDragon) {
-                isEnder = true;
-            }
-            List<EntityLiving> parasites = spawnParasites(entity.world, entity.getPosition(), buffer.num, isEnder);
-
-            for (EntityLiving en : parasites) {
-                en.setRevengeTarget(target);
-            }
+            spawnParasites(entity.world, entity, target, buffer.num, isEnder);
         }
     }
 
-    private List<EntityLiving> spawnParasites(World world, BlockPos pos, int amount, boolean isEnder) {
-        List<EntityLiving> parasites = Lists.newArrayList();
-
+    private int spawnParasites(World world, EntityLiving entity, EntityLivingBase target, int amount, boolean isEnder) {
         for (int i = 0; i < amount; i++) {
             EntityLiving para = isEnder ? new EntityEndermite(world) : new EntitySilverfish(world);
-            para.setLocationAndAngles((double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, 0.0F, 0.0F);
+            para.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
+            para.setRevengeTarget(target);
             IChampionship chp = CapabilityChampionship.getChampionship(para);
 
             if (chp != null) {
@@ -110,9 +101,8 @@ public class AffixInfested extends AffixBase {
             }
             world.spawnEntity(para);
             para.spawnExplosionParticle();
-            parasites.add(para);
         }
-        return parasites;
+        return amount;
     }
 
     @Override
@@ -146,27 +136,23 @@ public class AffixInfested extends AffixBase {
 
             if (entity.world.getDifficulty() != EnumDifficulty.PEACEFUL) {
                 --this.attackTime;
-                EntityLivingBase entitylivingbase = entity.getAttackTarget();
+                EntityLivingBase target = entity.getAttackTarget();
                 IChampionship chp = CapabilityChampionship.getChampionship(entity);
 
-                if (entitylivingbase != null && chp != null) {
-                    entity.getLookHelper().setLookPositionWithEntity(entitylivingbase, 180.0F, 180.0F);
+                if (target != null && chp != null) {
+                    entity.getLookHelper().setLookPositionWithEntity(target, 180.0F, 180.0F);
                     AffixNBT.Integer buffer = AffixNBT.getData(chp, getIdentifier(), AffixNBT.Integer.class);
 
                     if (this.attackTime <= 0 && buffer.num > 0) {
                         this.attackTime = ConfigHandler.affix.desecrator.attackInterval + entity.getRNG().nextInt(5) * 10;
-                        boolean isEnder = false;
+                        boolean isEnder = entity instanceof EntityEnderman
+                            || entity instanceof EntityShulker
+                            || entity instanceof EntityEndermite
+                            || entity instanceof EntityDragon
+                        ;
+                        int parasites = spawnParasites(entity.world, entity, target, ConfigHandler.affix.infested.silverfishAmount, isEnder);
 
-                        if (entity instanceof EntityEnderman || entity instanceof EntityShulker || entity instanceof EntityEndermite || entity instanceof EntityDragon) {
-                            isEnder = true;
-                        }
-                        List<EntityLiving> parasites = spawnParasites(entity.world, entity.getPosition(),
-                                ConfigHandler.affix.infested.silverfishAmount, isEnder);
-
-                        for (EntityLiving en : parasites) {
-                            en.setAttackTarget(entitylivingbase);
-                        }
-                        buffer.num = Math.max(0, buffer.num - parasites.size());
+                        buffer.num = Math.max(0, buffer.num - parasites);
                         buffer.saveData(entity);
                     }
                 }

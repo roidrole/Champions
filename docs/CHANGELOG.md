@@ -7,13 +7,14 @@ This project uses MAJORMOD.MAJORAPI.MINOR.PATCH.
 ## [1.1.0.0] - Unreleased
 ### Added
 - Config to (black/white)list tiers from dimensions
+- Config for Vortex to affect non-players
 - Rewrote CT integration (old one is deprecated)
   - Added rank attributor override
   - Added affix attributor override
-- General code cleanup
 
 ### Changed
 - config/champions/affixes must be in default order ; default order might have changed
+- Rewrote a bunch of the internals, should perform better
 
 ## [1.0.11.10] - 2021.01.22
 ### Fixed

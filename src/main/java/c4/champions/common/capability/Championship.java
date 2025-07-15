@@ -22,18 +22,18 @@ package c4.champions.common.capability;
 import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.rank.Rank;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
+import java.util.BitSet;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Championship implements IChampionship {
 
-    private Map<String, NBTTagCompound> affixData = Maps.newHashMap();
+    private Map<String, NBTTagCompound> affixData = new HashMap<>();
+    private BitSet affixes = new BitSet(EnumAffix.length);
     private Rank rank = null;
     private String name;
 
@@ -50,44 +50,41 @@ public class Championship implements IChampionship {
     }
 
     @Override
-    public ImmutableSet<String> getAffixes() {
-        return ImmutableSet.copyOf(affixData.keySet());
+    public BitSet getAffixes() {
+        return affixes;
     }
 
     @Override
-    public void setAffixData(String identifier, NBTTagCompound compound) {
-        affixData.replace(identifier, compound);
+    public void setAffixes(BitSet affixes){
+        this.affixes = affixes;
     }
-
     @Override
-    public void setAffixes(Set<String> affixes, boolean ignored) {
-        Map<String, NBTTagCompound> newData = Maps.newHashMap();
-
-        for (String s : affixes) {
-            newData.put(s, new NBTTagCompound());
-        }
-        affixData = newData;
-    }
-
-    @Override
-    public void setAffixes(Set<EnumAffix> affixes) {
-        setAffixes(affixes.stream().map(EnumAffix::getIdentifier).collect(Collectors.toSet()), true);
-    }
-
-    @Override
-    public ImmutableMap<String, NBTTagCompound> getAffixData() {
-        return ImmutableMap.copyOf(affixData);
+    public void setAffixes(EnumSet<EnumAffix> affixes) {
+        affixes.forEach(affix -> this.affixes.set(affix.ordinal()));
     }
 
     @Override
     public void setAffixData(Map<String, NBTTagCompound> affixes) {
         this.affixData = affixes;
     }
+    @Override
+    public void setAffixData(String identifier, NBTTagCompound compound) {
+        NBTTagCompound data = affixData.get(identifier);
+        if(data == null){
+            affixData.put(identifier, compound);
+        } else {
+            data.merge(compound);
+        }
+    }
 
+    @Override
+    public ImmutableMap<String, NBTTagCompound> getAffixData() {
+        return ImmutableMap.copyOf(affixData);
+    }
     @Override
     @Nullable
     public NBTTagCompound getAffixData(String identifier) {
-        return affixData.get(identifier);
+        return affixData.getOrDefault(identifier, new NBTTagCompound());
     }
 
     @Override

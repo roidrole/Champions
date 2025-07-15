@@ -66,7 +66,7 @@ public enum EnumAffix implements IAffix{
         this.affix = affix;
     }
 
-    public static void registerCompats() {
+    public static void postInit() {
         values = values();
         length = values.length;
         for (EnumAffix affix : EnumAffix.values) {
@@ -82,6 +82,9 @@ public enum EnumAffix implements IAffix{
 
     public static EnumAffix getAffix(String identifier){
         return EnumAffix.valueOf(identifier.toUpperCase());
+    }
+    public static EnumAffix getAffix(int ordinal){
+        return values[ordinal];
     }
 
     //IAffix methods

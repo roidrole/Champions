@@ -21,13 +21,11 @@ package c4.champions.command;
 
 import c4.champions.Champions;
 import c4.champions.common.affix.EnumAffix;
-import c4.champions.common.affix.IAffix;
 import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.capability.IChampionship;
 import c4.champions.common.rank.Rank;
 import c4.champions.common.rank.RankManager;
 import c4.champions.common.util.ChampionHelper;
-import com.google.common.collect.Sets;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -42,9 +40,9 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 public class CommandSpawnChampion extends CommandBase {
 
@@ -92,18 +90,17 @@ public class CommandSpawnChampion extends CommandBase {
             throw new CommandException(
                 Champions.MODID + ".commands.spawnchampion.tierError", args[1]);
         }
-        Set<String> argAffix = Sets.newHashSet();
+        BitSet affixes = new BitSet(EnumAffix.length);
 
         for (int i = 2; i < args.length; i++) {
-            String affix = args[i];
-            IAffix iAffix = EnumAffix.getAffix(affix);
+            EnumAffix affix = EnumAffix.getAffix(args[i]);
 
-            if (iAffix == null) {
+            if (affix == null) {
                 throw new CommandException(
                     Champions.MODID + ".commands.spawnchampion.affixError",
                     args[i]);
             }
-            argAffix.add(args[i]);
+            affixes.set(affix.ordinal());
         }
 
         World world = sender.getEntityWorld();
@@ -117,22 +114,18 @@ public class CommandSpawnChampion extends CommandBase {
 
             if (rank.getTier() > 0) {
 
-                if (argAffix.isEmpty()) {
+                if (affixes.isEmpty()) {
                     chp.setAffixes(ChampionHelper.generateAffixes(rank, living));
                 } else {
-                    chp.setAffixes(argAffix, true);
+                    chp.setAffixes(affixes);
                 }
 
                 chp.setName(ChampionHelper.generateRandomName());
                 chp.getRank().applyGrowth(living);
 
-                for (String s : chp.getAffixes()) {
-                    IAffix affix = EnumAffix.getAffix(s);
-
-                    if (affix != null) {
-                        affix.onInitialSpawn(living, chp);
-                    }
-                }
+                chp.getAffixes().stream().forEach(ordinal ->
+                    EnumAffix.getAffix(ordinal).onInitialSpawn(living, chp)
+                );
             }
         }
 

@@ -36,7 +36,7 @@ import java.util.*;
 public class AffixFilterManager {
 
     private static AffixFilter[] FILTERS;
-    private static final Map<Class<? extends Entity>, Set<EnumAffix>> ENTITY_AFFIX_MAP = new HashMap<>();
+    private static final Map<Class<? extends Entity>, EnumSet<EnumAffix>> ENTITY_AFFIX_MAP = new HashMap<>();
     private static final Map<Class<? extends Entity>, BitSet> ENTITY_INCOMPATS_MAP = new HashMap<>(16);
 
     @Nullable
@@ -57,7 +57,7 @@ public class AffixFilterManager {
     }
 
     @Nonnull
-    public static Set<EnumAffix> getPresetAffixesForEntity(Entity entity) {
+    public static EnumSet<EnumAffix> getPresetAffixesForEntity(Entity entity) {
         return ENTITY_AFFIX_MAP.getOrDefault(entity.getClass(), EnumSet.noneOf(EnumAffix.class));
     }
     @Nonnull
@@ -68,6 +68,7 @@ public class AffixFilterManager {
             ResourceLocation entityKey = EntityList.getKey(k);
             if(entityKey != null){
                 String thisId = entityKey.toString();
+                //Filters
                 for (int i = 0; i < FILTERS.length; i++) {
                     for(String id : FILTERS[i].getEntityBlacklist()){
                         if(id.equals(thisId)){
@@ -75,6 +76,10 @@ public class AffixFilterManager {
                         }
                     }
                 }
+                //Presets. Avoids doing it on each spawn
+                getPresetAffixesForEntity(entity).forEach(affix ->
+                    this.or(affix.incompats)
+                );
             }
         }});
     }
