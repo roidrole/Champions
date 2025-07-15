@@ -63,8 +63,11 @@ public class ChampionHelper {
     private static final Map<Class<? extends Entity>, Tuple<Integer, Integer>> champions = Maps.newHashMap();
 
     public static boolean isValidChampion(final Entity entity) {
-        if(mobs.isEmpty() || !(entity instanceof EntityLiving)){
+        if(!(entity instanceof EntityLiving)){
             return false;
+        }
+        if(mobs.isEmpty()){
+            return true;
         }
         return (ConfigHandler.mobPermission == ConfigHandler.PermissionMode.WHITELIST && mobs.contains(entity.getClass()));
     }
