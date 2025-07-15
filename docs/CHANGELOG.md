@@ -8,6 +8,7 @@ This project uses MAJORMOD.MAJORAPI.MINOR.PATCH.
 ### Added
 - Config to (black/white)list tiers from dimensions
 - Config for Vortex to affect non-players
+- Config for Shielding affix (chance to toggle on and off)
 - IMob requirement configurable
 - Rewrote CT integration (old one is deprecated)
   - Added rank attributor override
