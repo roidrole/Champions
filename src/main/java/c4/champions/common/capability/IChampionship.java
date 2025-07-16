@@ -22,12 +22,16 @@ package c4.champions.common.capability;
 import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.rank.Rank;
 import com.google.common.collect.ImmutableMap;
+import crafttweaker.annotations.ZenRegister;
 import net.minecraft.nbt.NBTTagCompound;
+import stanhebben.zenscript.annotations.ZenClass;
 
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.Map;
 
+@ZenClass("mods.champion.IChampionship")
+@ZenRegister
 public interface IChampionship {
 
     Rank getRank();

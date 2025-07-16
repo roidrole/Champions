@@ -21,43 +21,69 @@ package c4.champions.common.affix;
 
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
+import crafttweaker.annotations.ZenRegister;
 import net.minecraft.entity.EntityLiving;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenMethod;
 
 /*
  * Only Used for EnumAffix and AffixBase to have the same methods
  * Addons : have an object implementing IAffix (presumably extending AffixBase) and add it to EnumAffix by calling EnumHelper.addEnum() with a new IAffix() object
  */
+
+@ZenClass("mods.champion.IAffix")
+@ZenRegister
 public interface IAffix {
 
+    @ZenMethod
     String getIdentifier();
 
     AffixCategory getCategory();
 
+    @ZenMethod("getCategory")
+    @SuppressWarnings("unused")
+    static String getCategoryCT(IAffix affix){
+        return affix.getCategory().name().toLowerCase();
+    }
+
+    @ZenMethod
     void onInitialSpawn(EntityLiving entity, IChampionship cap);
 
+    @ZenMethod
     void onJoinWorld(EntityLiving entity, IChampionship cap, EntityJoinWorldEvent evt);
 
+    @ZenMethod
     void onUpdate(EntityLiving entity, IChampionship cap, LivingEvent.LivingUpdateEvent evt);
 
+    @ZenMethod
     void onAttack(EntityLiving entity, IChampionship cap, LivingAttackEvent evt);
 
+    @ZenMethod
     void onAttacked(EntityLiving entity, IChampionship cap, LivingAttackEvent evt);
 
+    @ZenMethod
     void onHurt(EntityLiving entity, IChampionship cap, LivingHurtEvent evt);
 
+    @ZenMethod
     void onHealed(EntityLiving entity, IChampionship cap, LivingHealEvent evt);
 
+    @ZenMethod
     void onDamaged(EntityLiving entity, IChampionship cap, LivingDamageEvent evt);
 
+    @ZenMethod
     void onDeath(EntityLiving entity, IChampionship cap, LivingDeathEvent evt);
 
+    @ZenMethod
     void onKnockback(EntityLiving entity, IChampionship cap, LivingKnockBackEvent evt);
 
+    @ZenMethod
     boolean canApply(EntityLiving entity);
 
+    @ZenMethod
     boolean isCompatibleWith(IAffix affix);
 
+    @ZenMethod
     int getTier();
 }

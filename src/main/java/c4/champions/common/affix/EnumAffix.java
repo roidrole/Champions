@@ -22,13 +22,18 @@ package c4.champions.common.affix;
 import c4.champions.common.affix.affix.*;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
+import crafttweaker.annotations.ZenRegister;
 import net.minecraft.entity.EntityLiving;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
+import stanhebben.zenscript.annotations.ZenExpansion;
+import stanhebben.zenscript.annotations.ZenMethodStatic;
 
 import java.util.BitSet;
 import java.util.EnumMap;
 
+@ZenExpansion("mods.champion.IAffix")
+@ZenRegister
 public enum EnumAffix implements IAffix{
 
     SHIELDING(new AffixShielding()),
@@ -63,7 +68,7 @@ public enum EnumAffix implements IAffix{
         this.affix = affix;
     }
 
-    public static void postInit() {
+    public static void registerCompats() {
         values = values();
         length = values.length;
         for (EnumAffix affix : EnumAffix.values) {
@@ -77,9 +82,11 @@ public enum EnumAffix implements IAffix{
         }
     }
 
+    @ZenMethodStatic
     public static EnumAffix getAffix(String identifier){
         return EnumAffix.valueOf(identifier.toUpperCase());
     }
+    @ZenMethodStatic
     public static EnumAffix getAffix(int ordinal){
         return values[ordinal];
     }

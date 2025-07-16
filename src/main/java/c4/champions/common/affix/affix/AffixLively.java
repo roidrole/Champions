@@ -25,7 +25,6 @@ import c4.champions.common.affix.core.AffixNBT;
 import c4.champions.common.capability.IChampionship;
 import c4.champions.common.config.ConfigHandler;
 import net.minecraft.entity.EntityLiving;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
@@ -33,11 +32,6 @@ public class AffixLively extends AffixBase {
 
     public AffixLively() {
         super("lively", AffixCategory.DEFENSE);
-    }
-
-    @Override
-    public void onJoinWorld(EntityLiving entity, IChampionship cap, EntityJoinWorldEvent evt) {
-        super.onJoinWorld(entity, cap, evt);
     }
 
     @Override

@@ -107,7 +107,7 @@ public class Champions
             isScalingHealthLoaded = true;
             ChampionDifficulty.loadConfigs();
         }
-        EnumAffix.postInit();
+        EnumAffix.registerCompats();
         RankManager.readRanksFromJson();
         AffixFilterManager.readAffixFiltersFromJson();
         ChampionHelper.parseConfigs();

@@ -67,11 +67,17 @@ dependencies {
     // }
 
     implementation('curse.maven:bookshelf-228525:2836960')
-    compileOnly('curse.maven:game-stages-268655:2951840')
-    compileOnly('curse.maven:crafttweaker-239197:6669824')
     compileOnly('curse.maven:silent-lib-242998:2851111')
     compileOnly('curse.maven:scaling-health-248027:2816920')
     implementation('mezz:jei:4.25.5')
+
+    //CT
+    compileOnly('curse.maven:game-stages-268655:2951840')
+    implementation('curse.maven:crafttweaker-239197:6669824')
+    implementation('curse.maven:zenutil-401178:6762641')
+    implementation('curse.maven:configanytime-870276:5212709')
+    implementation('curse.maven:mixin-booter-419286:6344449')
+
 
     runtimeOnly('curse.maven:spark-unforged-900927:4691415')
     runtimeOnly('curse.maven:configanytime-870276:5212709')
