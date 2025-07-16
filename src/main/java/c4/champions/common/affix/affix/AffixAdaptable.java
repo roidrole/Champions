@@ -26,7 +26,7 @@ import c4.champions.common.capability.IChampionship;
 import c4.champions.common.config.ConfigHandler;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class AffixAdaptable extends AffixBase {
 
@@ -35,19 +35,21 @@ public class AffixAdaptable extends AffixBase {
     }
 
     @Override
-    public float onHurt(EntityLiving entity, IChampionship cap, DamageSource source, float amount, float newAmount) {
-        String type = source.getDamageType();
+    public void onHurt(EntityLiving entity, IChampionship cap, LivingHurtEvent evt) {
+        String type = evt.getSource().getDamageType();
         DamageType damageType = AffixNBT.getData(cap, this.getIdentifier(), DamageType.class);
 
+        float newAmount = evt.getAmount();
+        float amount = evt.getAmount();
         if (damageType.name.equalsIgnoreCase(type)) {
-            newAmount -= amount * ConfigHandler.affix.adaptable.damageReductionIncrement * damageType.count;
+            newAmount -= amount * (float) ConfigHandler.affix.adaptable.damageReductionIncrement * damageType.count;
             damageType.count++;
         } else {
             damageType.name = type;
             damageType.count = 0;
         }
         damageType.saveData(entity);
-        return Math.max(amount * (float)(1.0f - ConfigHandler.affix.adaptable.maxDamageReduction), newAmount);
+        evt.setAmount(Math.max(amount * (float)(1.0f - ConfigHandler.affix.adaptable.maxDamageReduction), newAmount));
     }
 
     public static class DamageType extends AffixNBT {

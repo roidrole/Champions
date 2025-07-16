@@ -49,7 +49,7 @@ public class AffixEvents {
             if (chp != null) {
 
                 chp.getAffixes().stream().forEach(ordinal ->
-                    EnumAffix.getAffix(ordinal).onSpawn(living, chp)
+                    EnumAffix.getAffix(ordinal).onJoinWorld(living, chp, evt)
                 );
                 Rank rank = chp.getRank();
 
@@ -76,7 +76,7 @@ public class AffixEvents {
 
             if (chp != null) {
                 chp.getAffixes().stream().forEach(ordinal ->
-                    EnumAffix.getAffix(ordinal).onUpdate(living, chp)
+                    EnumAffix.getAffix(ordinal).onUpdate(living, chp, evt)
                 );
                 Rank rank = chp.getRank();
 
@@ -99,24 +99,21 @@ public class AffixEvents {
         }
     }
 
+    //Checks for both attack and attacked
     @SubscribeEvent
-    public void onLivingAttacked(LivingAttackEvent evt) {
-
+    public void onLivingAttackEvent(LivingAttackEvent evt) {
+        //onAttacked
         if (ChampionHelper.isValidChampion(evt.getEntityLiving())) {
             EntityLiving living = (EntityLiving)evt.getEntityLiving();
             IChampionship chp = CapabilityChampionship.getChampionship(living);
 
             if (chp != null) {
                 chp.getAffixes().stream().forEach(ordinal ->
-                    EnumAffix.getAffix(ordinal).onAttacked(living, chp, evt.getSource(), evt.getAmount(), evt)
+                    EnumAffix.getAffix(ordinal).onAttacked(living, chp, evt)
                 );
             }
         }
-    }
-
-    @SubscribeEvent
-    public void onLivingAttack(LivingAttackEvent evt) {
-
+        //onAttack
         if (evt.getSource().getTrueSource() instanceof EntityLivingBase) {
             EntityLivingBase entityLivingBase = (EntityLivingBase)evt.getSource().getTrueSource();
             if (ChampionHelper.isValidChampion(entityLivingBase)) {
@@ -124,9 +121,8 @@ public class AffixEvents {
                 IChampionship chp = CapabilityChampionship.getChampionship(living);
 
                 if (chp != null) {
-
                     chp.getAffixes().stream().forEach(ordinal ->
-                        EnumAffix.getAffix(ordinal).onAttack(living, chp, evt.getEntityLiving(), evt.getSource(), evt.getAmount(), evt)
+                        EnumAffix.getAffix(ordinal).onAttack(living, chp, evt)
                     );
                 }
             }
@@ -134,7 +130,7 @@ public class AffixEvents {
     }
 
     @SubscribeEvent
-    public void onLivingWasHurt(LivingHurtEvent evt) {
+    public void onLivingHurt(LivingHurtEvent evt) {
 
         if (ChampionHelper.isValidChampion(evt.getEntityLiving())) {
             float amount = evt.getAmount();
@@ -144,14 +140,7 @@ public class AffixEvents {
             IChampionship chp = CapabilityChampionship.getChampionship(living);
 
             if (chp != null) {
-
-                newAmount = chp.getAffixes().stream()
-                    .mapToObj(ordinal -> EnumAffix.getAffix(ordinal).onHurt(living, chp, evt.getSource(), amount, amount))
-                    .filter(f -> f != amount)
-                    .findAny()
-                    .orElse(amount)
-                ;
-                evt.setAmount(newAmount);
+                chp.getAffixes().stream().forEach(ordinal -> EnumAffix.getAffix(ordinal).onHurt(living, chp, evt));
             }
         }
     }
@@ -160,20 +149,11 @@ public class AffixEvents {
     public void onLivingDamaged(LivingDamageEvent evt) {
 
         if (ChampionHelper.isValidChampion(evt.getEntityLiving())) {
-            float amount = evt.getAmount();
-            float newAmount;
-
             EntityLiving living = (EntityLiving)evt.getEntityLiving();
             IChampionship chp = CapabilityChampionship.getChampionship(living);
 
             if (chp != null) {
-                newAmount = chp.getAffixes().stream()
-                    .mapToObj(ordinal -> EnumAffix.getAffix(ordinal).onDamaged(living, chp, evt.getSource(), amount, amount))
-                    .filter(f -> f != amount)
-                    .findAny()
-                    .orElse(amount)
-                ;
-                evt.setAmount(newAmount);
+                chp.getAffixes().stream().forEach(ordinal -> EnumAffix.getAffix(ordinal).onDamaged(living, chp, evt));
             }
         }
     }
@@ -203,7 +183,7 @@ public class AffixEvents {
             if (chp != null) {
 
                 chp.getAffixes().stream().forEach(ordinal ->
-                    EnumAffix.getAffix(ordinal).onDeath(living, chp, evt.getSource(), evt)
+                    EnumAffix.getAffix(ordinal).onDeath(living, chp, evt)
                 );
             }
         }
@@ -213,20 +193,12 @@ public class AffixEvents {
     public void onLivingHeal(LivingHealEvent evt) {
 
         if (ChampionHelper.isValidChampion(evt.getEntityLiving())) {
-            float amount = evt.getAmount();
-            float newAmount;
 
             EntityLiving living = (EntityLiving)evt.getEntityLiving();
             IChampionship chp = CapabilityChampionship.getChampionship(living);
 
             if (chp != null) {
-                newAmount = chp.getAffixes().stream()
-                    .mapToObj(ordinal -> EnumAffix.getAffix(ordinal).onHealed(living, chp,  amount, amount))
-                    .filter(f -> f != amount)
-                    .findAny()
-                    .orElse(amount)
-                ;
-                evt.setAmount(newAmount);
+                chp.getAffixes().stream().forEach(ordinal -> EnumAffix.getAffix(ordinal).onHealed(living, chp, evt));
             }
         }
     }

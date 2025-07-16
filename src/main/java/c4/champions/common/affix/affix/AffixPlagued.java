@@ -30,9 +30,9 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class AffixPlagued extends AffixBase {
   }
 
   @Override
-  public void onUpdate(EntityLiving entity, IChampionship cap) {
+  public void onUpdate(EntityLiving entity, IChampionship cap, LivingEvent.LivingUpdateEvent evt) {
 
     if (!entity.world.isRemote) {
       List<Entity> list = entity.world.getEntitiesWithinAABBExcludingEntity(entity,
@@ -68,9 +68,9 @@ public class AffixPlagued extends AffixBase {
   }
 
   @Override
-  public void onAttack(EntityLiving entity, IChampionship cap, EntityLivingBase target,
-      DamageSource source, float amount, LivingAttackEvent evt) {
-    target.addPotionEffect(
+  public void onAttack(EntityLiving entity, IChampionship cap,
+                       LivingAttackEvent evt) {
+    evt.getEntityLiving().addPotionEffect(
         new PotionEffect(ChampionsRegistry.plague, ConfigHandler.affix.plagued.duration));
   }
 

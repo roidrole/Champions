@@ -26,16 +26,10 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.util.DamageSource;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.*;
 
-import java.util.Random;
-
-public abstract class AffixBase implements IAffix {
-
-    protected static final Random rand = new Random();
+public class AffixBase implements IAffix {
 
     private final String identifier;
     private final AffixCategory category;
@@ -67,39 +61,38 @@ public abstract class AffixBase implements IAffix {
     }
 
     @Override
-    public void onSpawn(EntityLiving entity, IChampionship cap) {
+    public void onJoinWorld(EntityLiving entity, IChampionship cap, EntityJoinWorldEvent evt) {
 
     }
 
     @Override
-    public void onUpdate(EntityLiving entity, IChampionship cap) {
+    public void onUpdate(EntityLiving entity, IChampionship cap, LivingEvent.LivingUpdateEvent evt) {
 
     }
 
     @Override
-    public void onAttack(EntityLiving entity, IChampionship cap, EntityLivingBase target, DamageSource source, float
-            amount, LivingAttackEvent evt) {
+    public void onAttack(EntityLiving entity, IChampionship cap, LivingAttackEvent evt) {
 
     }
 
     @Override
-    public void onAttacked(EntityLiving entity, IChampionship cap, DamageSource source, float amount, LivingAttackEvent evt) {
+    public void onAttacked(EntityLiving entity, IChampionship cap, LivingAttackEvent evt) {
 
     }
 
     @Override
-    public float onHurt(EntityLiving entity, IChampionship cap, DamageSource source, float amount, float newAmount) {
-        return newAmount;
+    public void onHurt(EntityLiving entity, IChampionship cap, LivingHurtEvent evt) {
+
     }
 
     @Override
-    public float onDamaged(EntityLiving entity, IChampionship cap, DamageSource source, float amount, float newAmount) {
-        return newAmount;
+    public void onDamaged(EntityLiving entity, IChampionship cap, LivingDamageEvent evt) {
+
     }
 
     @Override
-    public float onHealed(EntityLiving entity, IChampionship cap, float amount, float newAmount) {
-        return newAmount;
+    public void onHealed(EntityLiving entity, IChampionship cap, LivingHealEvent evt) {
+
     }
 
     @Override
@@ -108,7 +101,7 @@ public abstract class AffixBase implements IAffix {
     }
 
     @Override
-    public void onDeath(EntityLiving entity, IChampionship cap, DamageSource source, LivingDeathEvent evt) {
+    public void onDeath(EntityLiving entity, IChampionship cap, LivingDeathEvent evt) {
 
     }
 

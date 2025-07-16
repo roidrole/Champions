@@ -26,9 +26,9 @@ import c4.champions.common.capability.IChampionship;
 import c4.champions.common.config.ConfigHandler;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 
 public class AffixShielding extends AffixBase {
 
@@ -37,7 +37,7 @@ public class AffixShielding extends AffixBase {
     }
 
     @Override
-    public void onUpdate(EntityLiving entity, IChampionship cap) {
+    public void onUpdate(EntityLiving entity, IChampionship cap, LivingEvent.LivingUpdateEvent evt) {
         AffixNBT.Boolean shielding = AffixNBT.getData(cap, getIdentifier(), AffixNBT.Boolean.class);
 
         if (!entity.world.isRemote) {
@@ -58,7 +58,7 @@ public class AffixShielding extends AffixBase {
     }
 
     @Override
-    public void onAttacked(EntityLiving entity, IChampionship cap, DamageSource source, float amount, LivingAttackEvent evt) {
+    public void onAttacked(EntityLiving entity, IChampionship cap, LivingAttackEvent evt) {
         AffixNBT.Boolean shielding = AffixNBT.getData(cap, getIdentifier(), AffixNBT.Boolean.class);
 
         if (shielding.mode) {

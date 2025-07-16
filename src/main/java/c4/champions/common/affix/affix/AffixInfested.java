@@ -34,10 +34,11 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityEndermite;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.monster.EntitySilverfish;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingHealEvent;
 
 public class AffixInfested extends AffixBase {
     public AffixInfested() {
@@ -53,31 +54,30 @@ public class AffixInfested extends AffixBase {
     }
 
     @Override
-    public void onSpawn(EntityLiving entity, IChampionship cap) {
+    public void onJoinWorld(EntityLiving entity, IChampionship cap, EntityJoinWorldEvent evt) {
         entity.tasks.addTask(0, new AISpawnParasite(entity));
     }
 
     @Override
-    public float onHealed(EntityLiving entity, IChampionship cap, float amount, float newAmount) {
+    public void onHealed(EntityLiving entity, IChampionship cap, LivingHealEvent evt) {
 
-        if (newAmount > 0 && rand.nextFloat() < 0.5F) {
+        if (evt.getAmount() > 0 && entity.world.rand.nextFloat() < 0.5F) {
             AffixNBT.Integer buffer = AffixNBT.getData(cap, getIdentifier(), AffixNBT.Integer.class);
             buffer.num = Math.min(ConfigHandler.affix.infested.silverfishTotal, buffer.num + 2);
             buffer.saveData(entity);
-            return 0;
+            evt.setAmount(0);
         }
-        return newAmount;
     }
 
     @Override
-    public void onDeath(EntityLiving entity, IChampionship cap, DamageSource source, LivingDeathEvent evt) {
+    public void onDeath(EntityLiving entity, IChampionship cap, LivingDeathEvent evt) {
 
         if (!entity.world.isRemote) {
             AffixNBT.Integer buffer = AffixNBT.getData(cap, getIdentifier(), AffixNBT.Integer.class);
             EntityLivingBase target = null;
 
-            if (source.getTrueSource() instanceof EntityLivingBase) {
-                target = (EntityLivingBase) source.getTrueSource();
+            if (evt.getSource().getTrueSource() instanceof EntityLivingBase) {
+                target = (EntityLivingBase) evt.getSource().getTrueSource();
             }
             boolean isEnder = entity instanceof EntityEnderman
              || entity instanceof EntityShulker

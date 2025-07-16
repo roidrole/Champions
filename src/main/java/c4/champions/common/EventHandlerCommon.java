@@ -154,8 +154,7 @@ public class EventHandlerCommon {
                 IChampionship chp = CapabilityChampionship.getChampionship(entity);
 
                 if (chp != null && ChampionHelper.isElite(chp.getRank())) {
-                    evt.setAmount(evt.getAmount() * (float)(1 + ConfigHandler.growth.attackDamage * chp.getRank()
-                            .getTier()));
+                    evt.setAmount(evt.getAmount() * (float)(1 + ConfigHandler.growth.attackDamage * chp.getRank().getTier()));
                 }
             }
         }

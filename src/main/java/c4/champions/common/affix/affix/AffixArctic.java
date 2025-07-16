@@ -29,6 +29,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 public class AffixArctic extends AffixBase {
 
@@ -37,7 +38,7 @@ public class AffixArctic extends AffixBase {
     }
 
     @Override
-    public void onSpawn(EntityLiving entity, IChampionship cap) {
+    public void onJoinWorld(EntityLiving entity, IChampionship cap, EntityJoinWorldEvent evt) {
         entity.tasks.addTask(0, new AIAttack(entity));
     }
 

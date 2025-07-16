@@ -27,6 +27,7 @@ import c4.champions.common.config.ConfigHandler;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.event.entity.living.LivingEvent;
 
 import javax.vecmath.Vector3d;
 
@@ -37,7 +38,7 @@ public class AffixVortex extends AffixBase {
     }
 
     @Override
-    public void onUpdate(EntityLiving entity, IChampionship cap) {
+    public void onUpdate(EntityLiving entity, IChampionship cap, LivingEvent.LivingUpdateEvent evt) {
 
         if (!entity.world.isRemote) {
             EntityLivingBase target = entity.getAttackTarget();
