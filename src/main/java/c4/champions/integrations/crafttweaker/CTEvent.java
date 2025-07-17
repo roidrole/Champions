@@ -17,6 +17,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 //Class to hold all CT Events this mod uses
 //They're just wrappers for the real thing, but can be newed from the actual event
 //Because I can't create a CT event with a forge one...
+@SuppressWarnings("unused")
 public abstract class CTEvent {
     //CT really wasn't build for this...
     //Default methods throw an error, subclasses override them
