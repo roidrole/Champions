@@ -66,7 +66,6 @@ public class ClientUtil {
                 Vec3d vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
                 RayTraceResult objectMouseOver = rayTraceBlocks(entity.world, vec3d, vec3d2, false, false,
                     true);
-                int i = 3;
                 double d1 = distance;
 
                 if (objectMouseOver != null) {
