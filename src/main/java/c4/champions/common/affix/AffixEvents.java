@@ -133,8 +133,6 @@ public class AffixEvents {
     public void onLivingHurt(LivingHurtEvent evt) {
 
         if (ChampionHelper.isValidChampion(evt.getEntityLiving())) {
-            float amount = evt.getAmount();
-            float newAmount;
 
             EntityLiving living = (EntityLiving)evt.getEntityLiving();
             IChampionship chp = CapabilityChampionship.getChampionship(living);

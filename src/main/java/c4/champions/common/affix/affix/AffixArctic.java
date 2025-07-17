@@ -42,6 +42,7 @@ public class AffixArctic extends AffixBase {
         entity.tasks.addTask(0, new AIAttack(entity));
     }
 
+    @SuppressWarnings("InnerClassMayBeStatic")
     class AIAttack extends EntityAIBase {
 
         private final EntityLiving entity;

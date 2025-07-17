@@ -100,11 +100,6 @@ public class AffixInfested extends AffixBase {
             if (evt.getSource().getTrueSource() instanceof EntityLivingBase) {
                 target = (EntityLivingBase) evt.getSource().getTrueSource();
             }
-            boolean isEnder = entity instanceof EntityEnderman
-             || entity instanceof EntityShulker
-             || entity instanceof EntityEndermite
-             || entity instanceof EntityDragon
-            ;
 
             spawnParasites(entity.world, entity, target, buffer.num, parasitesOverrides.get(entity.getClass()));
         }

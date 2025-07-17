@@ -52,6 +52,7 @@ public class AffixDesecrator extends AffixBase {
         }
     }
 
+    @SuppressWarnings("InnerClassMayBeStatic")
     class AIAttack extends EntityAIBase {
 
         private final EntityLiving entity;

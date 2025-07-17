@@ -39,7 +39,7 @@ public class AffixFilter {
     private final String[] alwaysOnEntity;
     private final int tier;
 
-    public AffixFilter(boolean enabled, String[] entityBlacklist, String[] alwaysOnEntity, int tier) {
+    public AffixFilter(String[] entityBlacklist, String[] alwaysOnEntity, int tier) {
         this.entityBlacklist = entityBlacklist;
         this.alwaysOnEntity = alwaysOnEntity;
         this.tier = tier;

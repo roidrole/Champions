@@ -89,14 +89,6 @@ public class ConfigHandler {
     @Comment("True if fake players can cause champion loot drops, otherwise false")
     public static boolean lootFake = true;
 
-    @Name("Additional Champion Names")
-    @Comment("Additional names that will be added to the pool of names given to champions")
-    public static String[] championNames = new String[]{};
-
-    @Name("Additional Champion Name Suffixes")
-    @Comment("Additional name suffixes that will be added to the pool of names given to champions")
-    public static String[] championNameSuffixes = new String[]{};
-
     @Name("Beacon Blacklist Range")
     @Comment("The range an active beacon will prevent champion spawns, 0 to disable")
     public static int beaconRange = 64;
