@@ -1,5 +1,6 @@
 package c4.champions.integrations.crafttweaker;
 
+import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.damage.IDamageSource;
 import crafttweaker.api.entity.IEntity;
 import crafttweaker.api.entity.IEntityLivingBase;
@@ -9,11 +10,14 @@ import net.minecraft.entity.Entity;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
+import stanhebben.zenscript.annotations.ZenClass;
 
 //Class to hold all CT Events this mod uses
 //They're just wrappers for the real thing, but can be newed from the actual event
 //Because I can't create a CT event with a forge one...
 public class CTEvent {
+    @ZenClass("mods.champion.events.EntityEvent")
+    @ZenRegister
     public static class CTEntityEvent extends CTEvent {
         private final EntityEvent event;
 
@@ -26,6 +30,8 @@ public class CTEvent {
         }
     }
 
+    @ZenClass("mods.champion.events.LivingEvent")
+    @ZenRegister
     public static class CTLivingEvent extends CTEntityEvent{
         private final LivingEvent event;
 
@@ -39,6 +45,8 @@ public class CTEvent {
         }
     }
 
+    @ZenClass("mods.champion.events.JoinWorldEvent")
+    @ZenRegister
     public static class CTJoinWorld extends CTEntityEvent {
         private final EntityJoinWorldEvent event;
 
@@ -52,6 +60,8 @@ public class CTEvent {
         }
     }
 
+    @ZenClass("mods.champion.events.AttackEvent")
+    @ZenRegister
     public static class CTAttackEvent extends CTLivingEvent{
         private final LivingAttackEvent event;
 
@@ -69,6 +79,8 @@ public class CTEvent {
         }
     }
 
+    @ZenClass("mods.champion.events.HurtEvent")
+    @ZenRegister
     public static class CTHurtEvent extends CTLivingEvent{
         private final LivingHurtEvent event;
 
@@ -90,6 +102,9 @@ public class CTEvent {
         }
     }
 
+
+    @ZenClass("mods.champion.events.HealEvent")
+    @ZenRegister
     public static class CTHealEvent extends CTLivingEvent{
         private final LivingHealEvent event;
 
@@ -107,6 +122,9 @@ public class CTEvent {
         }
     }
 
+
+    @ZenClass("mods.champion.events.DamageEvent")
+    @ZenRegister
     public static class CTDamageEvent extends CTLivingEvent{
         private final LivingDamageEvent event;
 
@@ -128,6 +146,9 @@ public class CTEvent {
         }
     }
 
+
+    @ZenClass("mods.champion.events.DeathEvent")
+    @ZenRegister
     public static class CTDeathEvent extends CTLivingEvent{
         private final LivingDeathEvent event;
 
@@ -141,6 +162,9 @@ public class CTEvent {
         }
     }
 
+
+    @ZenClass("mods.champion.events.KnockbackEvent")
+    @ZenRegister
     public static class CTKnockbackEvent extends CTLivingEvent{
         private final LivingKnockBackEvent event;
 

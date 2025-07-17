@@ -2,11 +2,11 @@
 import mods.champion.IAffix;
 import mods.champion.AffixBuilder;
 import crafttweaker.entity.IEntityLiving;
-import crafttweaker.event.EntityLivingUpdateEvent;
 import mods.champion.IChampionship;
+import mods.champion.events.LivingEvent;
 
 val myAffix as AffixBuilder = AffixBuilder.createAffix("super_cool", "cc");
-    myAffix.setOnUpdate(function(entity as IEntityLiving, cap as IChampionship, evt as EntityLivingUpdateEvent){
+    myAffix.setOnUpdate(function(entity as IEntityLiving, cap as IChampionship, evt as LivingEvent){
         print("it works!");
     });
 myAffix.register();
