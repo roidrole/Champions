@@ -151,27 +151,29 @@ public class ChampionHelper {
         return prefix + suffix;
     }
 
-    public static EnumSet<EnumAffix> generateAffixes(Rank rank, EntityLiving entityLivingIn) {
+    public static EnumSet<EnumAffix> generateAffixes(Rank rank, EntityLiving entity) {
         int size = rank.getAffixes();
         int tier = rank.getTier();
         if(CTChampion.affixAttributor != null){
-            return Arrays.stream(CTChampion.affixAttributor.apply(entityLivingIn, tier, size))
+            return Arrays.stream(CTChampion.affixAttributor.apply(entity, tier, size))
                 .map(name -> EnumAffix.valueOf(name.toUpperCase())).
                 collect(Collectors.toCollection(() -> EnumSet.noneOf(EnumAffix.class)))
             ;
         }
+        Class<? extends EntityLiving> entityClass = entity.getClass();
 
         //Handle preset affixes
         EnumSet<EnumAffix> output = AffixFilter.ENTITY_AFFIX_MAP
-            .getOrDefault(entityLivingIn.getClass(), EnumSet.noneOf(EnumAffix.class))
+            .getOrDefault(entityClass, EnumSet.noneOf(EnumAffix.class))
+            .clone()
         ;
         //Includes incompat for preset affixes
         BitSet unavailable = (BitSet) AffixFilter.ENTITY_INCOMPATS_MAP
-            .getOrDefault(entityLivingIn.getClass(), new BitSet(EnumAffix.length))
+            .getOrDefault(entityClass, new BitSet(EnumAffix.length))
             .clone()
         ;
 
-        Random random = entityLivingIn.world.rand;
+        Random random = entity.world.rand;
         while(output.size() < size && unavailable.cardinality() < EnumAffix.length){
 
             EnumAffix affix = EnumAffix.getAffix(randomClearBit(unavailable, EnumAffix.length, random));

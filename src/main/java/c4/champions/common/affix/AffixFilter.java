@@ -89,6 +89,10 @@ public class AffixFilter {
                     .set(affix.ordinal());
             }
         }
+        //Incompats of preset entities
+        ENTITY_AFFIX_MAP.forEach((clazz, affixes) -> affixes.forEach(affix ->
+            ENTITY_INCOMPATS_MAP.computeIfAbsent(clazz, klass -> new BitSet(EnumAffix.length)).or(affix.incompats)
+        ));
         for(EnumAffix affix : EnumAffix.values){
             if(affix.filter == null){
                 affix.filter = filters.get("DEFAULT");
