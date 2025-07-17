@@ -67,7 +67,7 @@ public class AffixFilter {
             new TypeToken<Map<String, AffixFilter>>(){},
             new File(Loader.instance().getConfigDir(), Champions.MODID + "/affixes.json"),
             new HashMap<String, AffixFilter>() {{
-                put("DEFAULT", new AffixFilter(true, new String[]{}, new String[]{}, 0));
+                put("DEFAULT", new AffixFilter(new String[]{}, new String[]{}, 0));
             }}
         );
 
