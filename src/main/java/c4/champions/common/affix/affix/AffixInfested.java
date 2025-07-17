@@ -88,7 +88,6 @@ public class AffixInfested extends AffixBase {
             }
             evt.setAmount(0);
         }
-        return newAmount;
     }
 
     @Override
