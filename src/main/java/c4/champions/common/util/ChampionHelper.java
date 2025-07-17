@@ -177,7 +177,7 @@ public class ChampionHelper {
         while(output.size() < size && unavailable.cardinality() < EnumAffix.length){
 
             EnumAffix affix = EnumAffix.getAffix(randomClearBit(unavailable, EnumAffix.length, random));
-            if(affix.filter.getTier() > tier){
+            if(affix.filter.getTier() > tier || !affix.canApply(entity)){
                 unavailable.set(affix.ordinal());
                 continue;
             }
