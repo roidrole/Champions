@@ -17,7 +17,8 @@ This project uses MAJORMOD.MAJORAPI.MINOR.PATCH.
   - Added affix attributor override
 
 ### Changed
-- config/champions/affixes must be in default order ; default order might have changed
+- config/chapions/affixes.json format. Regenerate
+- Changed Affix NBT format. Old champions won't be champions anymore
 - Rewrote a bunch of the internals, should perform better
 
 ## [1.0.11.10] - variable

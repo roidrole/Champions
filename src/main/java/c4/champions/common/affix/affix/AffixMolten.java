@@ -22,9 +22,8 @@ package c4.champions.common.affix.affix;
 import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.config.ConfigHandler;
+import c4.champions.common.ConfigHandler;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFleeSun;
 import net.minecraft.entity.ai.EntityAIRestrictSun;
@@ -34,7 +33,9 @@ import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 
 import java.util.Iterator;
 
@@ -45,7 +46,7 @@ public class AffixMolten extends AffixBase {
     }
 
     @Override
-    public void onSpawn(EntityLiving entity, IChampionship cap) {
+    public void onJoinWorld(EntityLiving entity, IChampionship cap, EntityJoinWorldEvent evt) {
         entity.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 40, 0, true, false));
         entity.setPathPriority(PathNodeType.WATER, -1.0F);
         entity.setPathPriority(PathNodeType.LAVA, 8.0F);
@@ -69,7 +70,7 @@ public class AffixMolten extends AffixBase {
     }
 
     @Override
-    public void onUpdate(EntityLiving entity, IChampionship cap) {
+    public void onUpdate(EntityLiving entity, IChampionship cap, LivingEvent.LivingUpdateEvent evt) {
 
         if (!entity.world.isRemote) {
 
@@ -88,9 +89,8 @@ public class AffixMolten extends AffixBase {
     }
 
     @Override
-    public void onAttack(EntityLiving entity, IChampionship cap, EntityLivingBase target, DamageSource source, float
-            amount, LivingAttackEvent evt) {
-        target.setFire(10);
-        source.setMagicDamage();
+    public void onAttack(EntityLiving entity, IChampionship cap, LivingAttackEvent evt) {
+        evt.getEntityLiving().setFire(10);
+        evt.getSource().setMagicDamage();
     }
 }

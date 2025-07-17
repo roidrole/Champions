@@ -22,7 +22,7 @@ package c4.champions.common.affix.affix;
 import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.config.ConfigHandler;
+import c4.champions.common.ConfigHandler;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
@@ -56,26 +56,26 @@ public class AffixReflecting extends AffixBase {
     }
 
     @Override
-    public float onDamaged(EntityLiving entity, IChampionship cap, DamageSource source, float amount, float newAmount) {
-
-        if (source.getTrueSource() instanceof EntityLivingBase) {
-            EntityLivingBase entityLivingBase = (EntityLivingBase) source.getTrueSource();
-
-            if (source.damageType.equals("reflecting") || (source instanceof EntityDamageSourceIndirect
-                && ((EntityDamageSourceIndirect) source).getIsThornsDamage())) {
-                return newAmount;
-            }
-            float min = (float) ConfigHandler.affix.reflecting.minimumPerc;
-            float max = (float) ConfigHandler.affix.reflecting.maximumPerc;
-            source.damageType = "reflecting";
-
-            if (source instanceof EntityDamageSource) {
-                ((EntityDamageSource) source).setIsThornsDamage();
-            }
-            entityLivingBase.attackEntityFrom(source, (float) Math.min(
-                amount * (min + entity.getRNG().nextFloat() * (max - min)), ConfigHandler.affix.reflecting.maxDamage
-            ));
+    public void onDamaged(EntityLiving entity, IChampionship cap, LivingDamageEvent evt) {
+        if(!(evt.getSource().getTrueSource() instanceof EntityLivingBase)){
+            return;
         }
-        return newAmount;
+        DamageSource source = evt.getSource();
+        EntityLivingBase entityLivingBase = (EntityLivingBase) source.getTrueSource();
+
+        if (source.damageType.equals("reflecting") || (source instanceof EntityDamageSourceIndirect
+            && ((EntityDamageSourceIndirect) source).getIsThornsDamage())) {
+            return;
+        }
+        float min = (float) ConfigHandler.affix.reflecting.minimumPerc;
+        float max = (float) ConfigHandler.affix.reflecting.maximumPerc;
+        source.damageType = "reflecting";
+
+        if (source instanceof EntityDamageSource) {
+            ((EntityDamageSource) source).setIsThornsDamage();
+        }
+        entityLivingBase.attackEntityFrom(source, (float) Math.min(
+            evt.getAmount() * (min + entity.getRNG().nextFloat() * (max - min)), ConfigHandler.affix.reflecting.maxDamage
+        ));
     }
 }

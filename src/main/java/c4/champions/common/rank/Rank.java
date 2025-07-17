@@ -20,7 +20,7 @@
 package c4.champions.common.rank;
 
 import c4.champions.Champions;
-import c4.champions.common.config.ConfigHandler;
+import c4.champions.common.ConfigHandler;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;

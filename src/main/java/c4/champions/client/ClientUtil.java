@@ -22,7 +22,7 @@ package c4.champions.client;
 import c4.champions.Champions;
 import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.config.ConfigHandler;
+import c4.champions.common.ConfigHandler;
 import com.google.common.base.Predicates;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -66,7 +66,6 @@ public class ClientUtil {
                 Vec3d vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
                 RayTraceResult objectMouseOver = rayTraceBlocks(entity.world, vec3d, vec3d2, false, false,
                     true);
-                int i = 3;
                 double d1 = distance;
 
                 if (objectMouseOver != null) {
@@ -74,7 +73,6 @@ public class ClientUtil {
                 }
                 Entity pointedEntity = null;
                 Vec3d vec3d3 = null;
-                float f = 1.0F;
                 List<Entity> list = client.world.getEntitiesInAABBexcluding(entity,
                     entity.getEntityBoundingBox()
                         .expand(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance)
@@ -82,8 +80,7 @@ public class ClientUtil {
                         (entity1) -> entity1 != null && entity1.canBeCollidedWith()));
                 double d2 = d1;
 
-                for (int j = 0; j < list.size(); ++j) {
-                    Entity entity1 = list.get(j);
+                for (Entity entity1 : list) {
                     AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox()
                         .grow((double) entity1.getCollisionBorderSize() + 0.5d);
                     RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(vec3d, vec3d2);
@@ -209,24 +206,28 @@ public class ClientUtil {
         }
     }
 
-    private static void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width,
-                                              int height) {
+    private static void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height) {
         float u = 0.00390625F;
         float v = 0.00390625F;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos((double) (x), (double) (y + height), 0)
-            .tex((double) ((float) (textureX) * u), (double) ((float) (textureY + height) * v))
-            .endVertex();
-        bufferbuilder.pos((double) (x + width), (double) (y + height), 0)
-            .tex((double) ((float) (textureX + width) * u), (double) ((float) (textureY + height) * v))
-            .endVertex();
-        bufferbuilder.pos((double) (x + width), (double) (y), 0)
-            .tex((double) ((float) (textureX + width) * u), (double) ((float) (textureY) * v))
-            .endVertex();
-        bufferbuilder.pos((double) (x), (double) (y), 0)
-            .tex((double) ((float) (textureX) * u), (double) ((float) (textureY) * v)).endVertex();
+        bufferbuilder
+            .pos(x, y + height, 0)
+            .tex((float) (textureX) * u, (float) (textureY + height) * v)
+        .endVertex();
+        bufferbuilder
+            .pos(x + width, y + height, 0)
+            .tex((float) (textureX + width) * u, (float) (textureY + height) * v)
+        .endVertex();
+        bufferbuilder
+            .pos(x + width, y, 0)
+            .tex((float) (textureX + width) * u, (float) (textureY) * v)
+        .endVertex();
+        bufferbuilder
+            .pos(x, y, 0)
+            .tex((float) (textureX) * u, (float) (textureY) * v)
+        .endVertex();
         tessellator.draw();
     }
 

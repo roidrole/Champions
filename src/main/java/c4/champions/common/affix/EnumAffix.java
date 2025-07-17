@@ -22,16 +22,18 @@ package c4.champions.common.affix;
 import c4.champions.common.affix.affix.*;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
+import crafttweaker.annotations.ZenRegister;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.DamageSource;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.*;
+import stanhebben.zenscript.annotations.ZenExpansion;
+import stanhebben.zenscript.annotations.ZenMethodStatic;
 
 import java.util.BitSet;
 import java.util.EnumMap;
 
+@ZenExpansion("mods.champion.IAffix")
+@ZenRegister
 public enum EnumAffix implements IAffix{
 
     SHIELDING(new AffixShielding()),
@@ -52,6 +54,7 @@ public enum EnumAffix implements IAffix{
     CINDER(new AffixCinder());
 
     public final IAffix affix;
+    public AffixFilter filter;
     public BitSet incompats;
     public static final EnumMap<AffixCategory, BitSet> categorySetMap = new EnumMap<AffixCategory, BitSet>(AffixCategory.class){{
         for(AffixCategory category : AffixCategory.values){
@@ -66,7 +69,7 @@ public enum EnumAffix implements IAffix{
         this.affix = affix;
     }
 
-    public static void postInit() {
+    public static void registerCompats() {
         values = values();
         length = values.length;
         for (EnumAffix affix : EnumAffix.values) {
@@ -80,9 +83,11 @@ public enum EnumAffix implements IAffix{
         }
     }
 
+    @ZenMethodStatic
     public static EnumAffix getAffix(String identifier){
         return EnumAffix.valueOf(identifier.toUpperCase());
     }
+    @ZenMethodStatic
     public static EnumAffix getAffix(int ordinal){
         return values[ordinal];
     }
@@ -103,43 +108,43 @@ public enum EnumAffix implements IAffix{
     }
 
     @Override
-    public void onSpawn(EntityLiving entity, IChampionship cap) {
-        this.affix.onSpawn(entity, cap);
+    public void onJoinWorld(EntityLiving entity, IChampionship cap, EntityJoinWorldEvent evt) {
+        this.affix.onJoinWorld(entity, cap, evt);
     }
 
     @Override
-    public void onUpdate(EntityLiving entity, IChampionship cap) {
-        this.affix.onUpdate(entity, cap);
+    public void onUpdate(EntityLiving entity, IChampionship cap, LivingEvent.LivingUpdateEvent evt) {
+        this.affix.onUpdate(entity, cap, evt);
     }
 
     @Override
-    public void onAttack(EntityLiving entity, IChampionship cap, EntityLivingBase target, DamageSource source, float amount, LivingAttackEvent evt) {
-        this.affix.onAttack(entity, cap, target, source, amount, evt);
+    public void onAttack(EntityLiving entity, IChampionship cap, LivingAttackEvent evt) {
+        this.affix.onAttack(entity, cap, evt);
     }
 
     @Override
-    public void onAttacked(EntityLiving entity, IChampionship cap, DamageSource source, float amount, LivingAttackEvent evt) {
-        this.affix.onAttacked(entity, cap, source, amount, evt);
+    public void onAttacked(EntityLiving entity, IChampionship cap, LivingAttackEvent evt) {
+        this.affix.onAttacked(entity, cap, evt);
     }
 
     @Override
-    public float onHurt(EntityLiving entity, IChampionship cap, DamageSource source, float amount, float newAmount) {
-        return this.affix.onHurt(entity, cap, source, amount, newAmount);
+    public void onHurt(EntityLiving entity, IChampionship cap, LivingHurtEvent evt) {
+        this.affix.onHurt(entity, cap, evt);
     }
 
     @Override
-    public float onHealed(EntityLiving entity, IChampionship cap, float amount, float newAmount) {
-        return this.affix.onHealed(entity, cap, amount, newAmount);
+    public void onHealed(EntityLiving entity, IChampionship cap, LivingHealEvent evt) {
+        this.affix.onHealed(entity, cap, evt);
     }
 
     @Override
-    public float onDamaged(EntityLiving entity, IChampionship cap, DamageSource source, float amount, float newAmount) {
-        return this.affix.onDamaged(entity, cap, source, amount, newAmount);
+    public void onDamaged(EntityLiving entity, IChampionship cap, LivingDamageEvent evt) {
+        this.affix.onDamaged(entity, cap, evt);
     }
 
     @Override
-    public void onDeath(EntityLiving entity, IChampionship cap, DamageSource source, LivingDeathEvent evt) {
-        this.affix.onDeath(entity, cap, source, evt);
+    public void onDeath(EntityLiving entity, IChampionship cap, LivingDeathEvent evt) {
+        this.affix.onDeath(entity, cap, evt);
     }
 
     @Override

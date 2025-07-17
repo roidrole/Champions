@@ -22,7 +22,6 @@ package c4.champions.common;
 import c4.champions.Champions;
 import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.config.ConfigHandler;
 import c4.champions.common.init.ChampionsRegistry;
 import c4.champions.common.util.ChampionHelper;
 import net.minecraft.entity.Entity;
@@ -154,8 +153,7 @@ public class EventHandlerCommon {
                 IChampionship chp = CapabilityChampionship.getChampionship(entity);
 
                 if (chp != null && ChampionHelper.isElite(chp.getRank())) {
-                    evt.setAmount(evt.getAmount() * (float)(1 + ConfigHandler.growth.attackDamage * chp.getRank()
-                            .getTier()));
+                    evt.setAmount(evt.getAmount() * (float)(1 + ConfigHandler.growth.attackDamage * chp.getRank().getTier()));
                 }
             }
         }

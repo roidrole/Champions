@@ -22,14 +22,13 @@ package c4.champions.common.affix.affix;
 import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.config.ConfigHandler;
+import c4.champions.common.ConfigHandler;
 import c4.champions.common.entity.EntityJail;
 import c4.champions.common.init.ChampionsRegistry;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 public class AffixJailer extends AffixBase {
@@ -39,9 +38,8 @@ public class AffixJailer extends AffixBase {
     }
 
     @Override
-    public void onAttack(EntityLiving entity, IChampionship cap, EntityLivingBase target, DamageSource source, float
-            amount, LivingAttackEvent evt) {
-
+    public void onAttack(EntityLiving entity, IChampionship cap, LivingAttackEvent evt) {
+        EntityLivingBase target = evt.getEntityLiving();
         if (!entity.world.isRemote && entity.getRNG().nextFloat() < ConfigHandler.affix.jailer.chance &&
                 !target.isPotionActive(ChampionsRegistry.jailed)) {
             target.addPotionEffect(new PotionEffect(ChampionsRegistry.jailed, 5, 0, false, false));

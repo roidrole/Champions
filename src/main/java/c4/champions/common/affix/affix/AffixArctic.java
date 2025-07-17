@@ -22,13 +22,14 @@ package c4.champions.common.affix.affix;
 import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.config.ConfigHandler;
+import c4.champions.common.ConfigHandler;
 import c4.champions.common.entity.EntityArcticSpark;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 public class AffixArctic extends AffixBase {
 
@@ -37,10 +38,11 @@ public class AffixArctic extends AffixBase {
     }
 
     @Override
-    public void onSpawn(EntityLiving entity, IChampionship cap) {
+    public void onJoinWorld(EntityLiving entity, IChampionship cap, EntityJoinWorldEvent evt) {
         entity.tasks.addTask(0, new AIAttack(entity));
     }
 
+    @SuppressWarnings("InnerClassMayBeStatic")
     class AIAttack extends EntityAIBase {
 
         private final EntityLiving entity;

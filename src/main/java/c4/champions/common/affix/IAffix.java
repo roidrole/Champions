@@ -21,43 +21,58 @@ package c4.champions.common.affix;
 
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
+import crafttweaker.annotations.ZenRegister;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.DamageSource;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.*;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenMethod;
 
+/*
+ * Only Used for EnumAffix and AffixBase to have the same methods
+ * Addons : have an object implementing IAffix (presumably extending AffixBase) and add it to EnumAffix by calling EnumHelper.addEnum() with a new IAffix() object
+ */
+
+@ZenClass("mods.champion.IAffix")
+@ZenRegister
 public interface IAffix {
 
+    @ZenMethod
     String getIdentifier();
 
     AffixCategory getCategory();
 
+    @ZenMethod("getCategory")
+    @SuppressWarnings("unused")
+    static String getCategoryCT(IAffix affix){
+        return affix.getCategory().name().toLowerCase();
+    }
+
     void onInitialSpawn(EntityLiving entity, IChampionship cap);
 
-    void onSpawn(EntityLiving entity, IChampionship cap);
+    void onJoinWorld(EntityLiving entity, IChampionship cap, EntityJoinWorldEvent evt);
 
-    void onUpdate(EntityLiving entity, IChampionship cap);
+    void onUpdate(EntityLiving entity, IChampionship cap, LivingEvent.LivingUpdateEvent evt);
 
-    void onAttack(EntityLiving entity, IChampionship cap, EntityLivingBase target, DamageSource source, float amount,
-                  LivingAttackEvent evt);
+    void onAttack(EntityLiving entity, IChampionship cap, LivingAttackEvent evt);
 
-    void onAttacked(EntityLiving entity, IChampionship cap, DamageSource source, float amount, LivingAttackEvent evt);
+    void onAttacked(EntityLiving entity, IChampionship cap, LivingAttackEvent evt);
 
-    float onHurt(EntityLiving entity, IChampionship cap, DamageSource source, float amount, float newAmount);
+    void onHurt(EntityLiving entity, IChampionship cap, LivingHurtEvent evt);
 
-    float onHealed(EntityLiving entity, IChampionship cap, float amount, float newAmount);
+    void onHealed(EntityLiving entity, IChampionship cap, LivingHealEvent evt);
 
-    float onDamaged(EntityLiving entity, IChampionship cap, DamageSource source, float amount, float newAmount);
+    void onDamaged(EntityLiving entity, IChampionship cap, LivingDamageEvent evt);
 
-    void onDeath(EntityLiving entity, IChampionship cap, DamageSource source, LivingDeathEvent evt);
+    void onDeath(EntityLiving entity, IChampionship cap, LivingDeathEvent evt);
 
     void onKnockback(EntityLiving entity, IChampionship cap, LivingKnockBackEvent evt);
 
     boolean canApply(EntityLiving entity);
 
+    @ZenMethod
     boolean isCompatibleWith(IAffix affix);
 
+    @ZenMethod
     int getTier();
 }

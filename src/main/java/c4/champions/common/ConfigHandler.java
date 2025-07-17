@@ -17,7 +17,7 @@
  * License along with Champions.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package c4.champions.common.config;
+package c4.champions.common;
 
 import c4.champions.Champions;
 import net.minecraftforge.common.config.Config;
@@ -89,14 +89,6 @@ public class ConfigHandler {
     @Comment("True if fake players can cause champion loot drops, otherwise false")
     public static boolean lootFake = true;
 
-    @Name("Additional Champion Names")
-    @Comment("Additional names that will be added to the pool of names given to champions")
-    public static String[] championNames = new String[]{};
-
-    @Name("Additional Champion Name Suffixes")
-    @Comment("Additional name suffixes that will be added to the pool of names given to champions")
-    public static String[] championNameSuffixes = new String[]{};
-
     @Name("Beacon Blacklist Range")
     @Comment("The range an active beacon will prevent champion spawns, 0 to disable")
     public static int beaconRange = 64;
@@ -104,6 +96,15 @@ public class ConfigHandler {
     @Name("Death Message Tier")
     @Comment("The tier (and above) of champions that will have death messages sent out upon defeat, 0 to disable")
     public static int deathMessageTier = 0;
+
+    @Name("Champion Names Settings")
+    @Comment(
+        "Increase if adding custom names. Localization key for names is champions.prefix.[index] and champions.suffix.[index]\n" +
+        "The game will pick a random index between 0 and these values to set the mob's name\n" +
+        "You can see default names in resources/assets/champions/lang/en_us.lang.\n" +
+        "When adding names, you should add localization entries with indexes starting after the max from this mod."
+    )
+    public static ChampionNames names = new ChampionNames();
 
     @Name("Client Settings")
     @Comment("Settings that are only client-side")
@@ -442,6 +443,17 @@ public class ConfigHandler {
                 " Note that tier spawn chances are cumulative, so increasing lower tier spawns will naturally increase higher tier spawns.")
         @RequiresMcRestart
         public String[] spawnModifiers = new String[]{};
+    }
+
+    public static class ChampionNames{
+        @Name("Champion Names")
+        @Comment("Number of prefixes in the pool of prefixes given to champions.\n This mod adds 24")
+        public int championPrefixes = 24;
+
+
+        @Name("Champion Suffixes")
+        @Comment("Number of suffixes in the pool of suffixes given to champions.\n This mod adds 24")
+        public int championSuffixes = 24;
     }
 
     public enum PermissionMode {

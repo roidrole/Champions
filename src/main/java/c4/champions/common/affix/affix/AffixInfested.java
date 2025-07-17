@@ -24,7 +24,7 @@ import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.affix.core.AffixNBT;
 import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.config.ConfigHandler;
+import c4.champions.common.ConfigHandler;
 import c4.champions.common.rank.RankManager;
 import c4.champions.common.util.ChampionHelper;
 import crafttweaker.CraftTweakerAPI;
@@ -39,10 +39,11 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityEndermite;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.monster.EntitySilverfish;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -71,34 +72,33 @@ public class AffixInfested extends AffixBase {
     }
 
     @Override
-    public void onSpawn(EntityLiving entity, IChampionship cap) {
+    public void onJoinWorld(EntityLiving entity, IChampionship cap, EntityJoinWorldEvent evt) {
         entity.tasks.addTask(0, new AISpawnParasite(entity));
     }
 
     @Override
-    public float onHealed(EntityLiving entity, IChampionship cap, float amount, float newAmount) {
+    public void onHealed(EntityLiving entity, IChampionship cap, LivingHealEvent evt) {
 
-        if (newAmount > 0 && rand.nextFloat() < 0.5F) {
+        if (evt.getAmount() > 0 && entity.world.rand.nextFloat() < 0.5F) {
             AffixNBT.Integer buffer = AffixNBT.getData(cap, getIdentifier(), AffixNBT.Integer.class);
-            if(buffer.num >= ConfigHandler.affix.infested.silverfishTotal - 1){
-                return ConfigHandler.affix.infested.canHeal?newAmount:0;
-            }
             buffer.num += 2;
             buffer.saveData(entity);
-            return 0;
+            if(buffer.num >= ConfigHandler.affix.infested.silverfishTotal - 1 && ConfigHandler.affix.infested.canHeal){
+                return;
+            }
+            evt.setAmount(0);
         }
-        return newAmount;
     }
 
     @Override
-    public void onDeath(EntityLiving entity, IChampionship cap, DamageSource source, LivingDeathEvent evt) {
+    public void onDeath(EntityLiving entity, IChampionship cap, LivingDeathEvent evt) {
 
         if (!entity.world.isRemote) {
             AffixNBT.Integer buffer = AffixNBT.getData(cap, getIdentifier(), AffixNBT.Integer.class);
             EntityLivingBase target = null;
 
-            if (source.getTrueSource() instanceof EntityLivingBase) {
-                target = (EntityLivingBase) source.getTrueSource();
+            if (evt.getSource().getTrueSource() instanceof EntityLivingBase) {
+                target = (EntityLivingBase) evt.getSource().getTrueSource();
             }
 
             spawnParasites(entity.world, entity, target, buffer.num, parasitesOverrides.get(entity.getClass()));

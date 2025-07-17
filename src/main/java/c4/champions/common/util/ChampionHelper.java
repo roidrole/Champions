@@ -22,8 +22,8 @@ package c4.champions.common.util;
 import c4.champions.Champions;
 import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.affix.core.AffixCategory;
-import c4.champions.common.affix.filter.AffixFilterManager;
-import c4.champions.common.config.ConfigHandler;
+import c4.champions.common.affix.AffixFilter;
+import c4.champions.common.ConfigHandler;
 import c4.champions.common.potion.PotionPlague;
 import c4.champions.common.rank.Rank;
 import c4.champions.common.rank.RankManager;
@@ -64,7 +64,7 @@ public class ChampionHelper {
     private static final Map<Class<? extends Entity>, Tuple<Integer, Integer>> champions = Maps.newHashMap();
 
     public static boolean isValidChampion(final Entity entity) {
-        if(!(entity instanceof EntityLiving || (!ConfigHandler.peacefulChampions && entity instanceof IMob))){
+        if(!(entity instanceof EntityLiving) || (!ConfigHandler.peacefulChampions && !(entity instanceof IMob))){
             return false;
         }
         if(mobs.isEmpty()){
@@ -142,29 +142,12 @@ public class ChampionHelper {
     }
 
     public static String generateRandomName() {
-        int langSize = 24;
-        int randomPrefix = rand.nextInt(langSize + ConfigHandler.championNames.length);
-        int randomSuffix = rand.nextInt(langSize + ConfigHandler.championNameSuffixes.length);
-        String prefix;
-        String suffix;
+        int randomPrefix = rand.nextInt(ConfigHandler.names.championPrefixes);
+        int randomSuffix = rand.nextInt(ConfigHandler.names.championSuffixes);
         String header = Champions.MODID + ".%s.%d";
+        String prefix = new TextComponentTranslation(String.format(header, "prefix", randomPrefix)).getFormattedText();
+        String suffix = new TextComponentTranslation(String.format(header, "suffix", randomSuffix)).getFormattedText();
 
-        if (randomPrefix < langSize) {
-            prefix = new TextComponentTranslation(String.format(header, "prefix", randomPrefix)).getFormattedText();
-        } else {
-            prefix = ConfigHandler.championNames[randomPrefix - langSize];
-        }
-
-        if (randomSuffix < langSize) {
-            suffix = new TextComponentTranslation(String.format(header, "suffix", randomSuffix)).getFormattedText();
-        } else {
-            String configSuffix = ConfigHandler.championNameSuffixes[randomSuffix - langSize];
-            if (!configSuffix.isEmpty()) {
-                suffix = configSuffix.charAt(0) == ',' ? configSuffix : " " + configSuffix;
-            } else {
-                suffix = "";
-            }
-        }
         return prefix + suffix;
     }
 
@@ -179,15 +162,20 @@ public class ChampionHelper {
         }
 
         //Handle preset affixes
-        EnumSet<EnumAffix> output = AffixFilterManager.getPresetAffixesForEntity(entityLivingIn);
+        EnumSet<EnumAffix> output = AffixFilter.ENTITY_AFFIX_MAP
+            .getOrDefault(entityLivingIn.getClass(), EnumSet.noneOf(EnumAffix.class))
+        ;
         //Includes incompat for preset affixes
-        BitSet unavailable = (BitSet) AffixFilterManager.getIncompatAffixesForEntity(entityLivingIn).clone();
+        BitSet unavailable = (BitSet) AffixFilter.ENTITY_INCOMPATS_MAP
+            .getOrDefault(entityLivingIn.getClass(), new BitSet(EnumAffix.length))
+            .clone()
+        ;
 
         Random random = entityLivingIn.world.rand;
         while(output.size() < size && unavailable.cardinality() < EnumAffix.length){
 
             EnumAffix affix = EnumAffix.getAffix(randomClearBit(unavailable, EnumAffix.length, random));
-            if(!AffixFilterManager.isValidTier(affix, tier)){
+            if(affix.filter.getTier() > tier){
                 unavailable.set(affix.ordinal());
                 continue;
             }

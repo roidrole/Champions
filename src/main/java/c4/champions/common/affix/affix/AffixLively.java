@@ -23,9 +23,10 @@ import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.affix.core.AffixNBT;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.config.ConfigHandler;
+import c4.champions.common.ConfigHandler;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.util.DamageSource;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 
 public class AffixLively extends AffixBase {
 
@@ -34,12 +35,7 @@ public class AffixLively extends AffixBase {
     }
 
     @Override
-    public void onSpawn(EntityLiving entity, IChampionship cap) {
-        super.onSpawn(entity, cap);
-    }
-
-    @Override
-    public void onUpdate(EntityLiving entity, IChampionship cap) {
+    public void onUpdate(EntityLiving entity, IChampionship cap, LivingEvent.LivingUpdateEvent evt) {
 
         if (!entity.world.isRemote) {
             AffixNBT.Integer lastAttackTime = AffixNBT.getData(cap, this.getIdentifier(), AffixNBT.Integer.class);
@@ -57,10 +53,9 @@ public class AffixLively extends AffixBase {
     }
 
     @Override
-    public float onDamaged(EntityLiving entity, IChampionship cap, DamageSource source, float amount, float newAmount) {
+    public void onDamaged(EntityLiving entity, IChampionship cap, LivingDamageEvent evt) {
         AffixNBT.Integer lastAttackTime = AffixNBT.getData(cap, this.getIdentifier(), AffixNBT.Integer.class);
         lastAttackTime.num = (int)entity.world.getTotalWorldTime();
         lastAttackTime.saveData(entity);
-        return super.onDamaged(entity, cap, source, amount, newAmount);
     }
 }
