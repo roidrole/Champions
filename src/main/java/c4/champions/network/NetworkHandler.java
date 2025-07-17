@@ -26,8 +26,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class NetworkHandler {
 
-    public static final SimpleNetworkWrapper INSTANCE =
-            NetworkRegistry.INSTANCE.newSimpleChannel(Champions.MODID);
+    public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(Champions.MODID);
 
     public static void register() {
         INSTANCE.registerMessage(PacketSyncAffix.PacketSyncHandler.class, PacketSyncAffix.class, 0, Side.CLIENT);

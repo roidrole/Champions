@@ -11,6 +11,7 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
 import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenMethod;
 
 //Class to hold all CT Events this mod uses
 //They're just wrappers for the real thing, but can be newed from the actual event
@@ -25,6 +26,7 @@ public class CTEvent {
             this.event = event;
         }
 
+        @ZenMethod
         public IEntity getEntity(){
             return CraftTweakerMC.getIEntity(event.getEntity());
         }
@@ -40,6 +42,7 @@ public class CTEvent {
             this.event = event;
         }
 
+        @ZenMethod
         public IEntityLivingBase getEntityLiving(){
             return CraftTweakerMC.getIEntityLivingBase(event.getEntityLiving());
         }
@@ -55,6 +58,7 @@ public class CTEvent {
             this.event = event;
         }
 
+        @ZenMethod
         public IWorld getWorld(){
             return CraftTweakerMC.getIWorld(event.getWorld());
         }
@@ -70,10 +74,12 @@ public class CTEvent {
             this.event = event;
         }
 
+        @ZenMethod
         public IDamageSource getSource() {
             return CraftTweakerMC.getIDamageSource(event.getSource());
         }
 
+        @ZenMethod
         public float getAmount() {
             return event.getAmount();
         }
@@ -89,14 +95,17 @@ public class CTEvent {
             this.event = event;
         }
 
+        @ZenMethod
         public IDamageSource getSource() {
             return CraftTweakerMC.getIDamageSource(event.getSource());
         }
 
+        @ZenMethod
         public float getAmount() {
             return event.getAmount();
         }
 
+        @ZenMethod
         public void setAmount(float amount) {
             event.setAmount(amount);
         }
@@ -113,10 +122,12 @@ public class CTEvent {
             this.event = event;
         }
 
+        @ZenMethod
         public float getAmount() {
             return event.getAmount();
         }
 
+        @ZenMethod
         public void setAmount(float amount) {
             event.setAmount(amount);
         }
@@ -133,14 +144,17 @@ public class CTEvent {
             this.event = event;
         }
 
+        @ZenMethod
         public IDamageSource getSource() {
             return CraftTweakerMC.getIDamageSource(event.getSource());
         }
 
+        @ZenMethod
         public float getAmount() {
             return event.getAmount();
         }
 
+        @ZenMethod
         public void setAmount(float amount) {
             event.setAmount(amount);
         }
@@ -157,6 +171,7 @@ public class CTEvent {
             this.event = event;
         }
 
+        @ZenMethod
         public IDamageSource getSource() {
             return CraftTweakerMC.getIDamageSource(event.getSource());
         }
@@ -173,54 +188,65 @@ public class CTEvent {
             this.event = event;
         }
 
+        @ZenMethod
         public IEntity getAttacker() {
             return CraftTweakerMC.getIEntity(event.getAttacker());
         }
 
+        @ZenMethod
         public float getStrength() {
             return event.getStrength();
         }
 
+        @ZenMethod
         public double getRatioX() {
             return event.getRatioX();
         }
 
+        @ZenMethod
         public double getRatioZ() {
             return event.getRatioZ();
         }
 
+        @ZenMethod
         public Entity getOriginalAttacker() {
             return event.getOriginalAttacker();
         }
 
+        @ZenMethod
         public float getOriginalStrength() {
             return event.getOriginalStrength();
         }
 
+        @ZenMethod
         public double getOriginalRatioX() {
             return event.getOriginalRatioX();
         }
 
+        @ZenMethod
         public double getOriginalRatioZ() {
             return event.getOriginalRatioZ();
         }
 
+        @ZenMethod
         public void setAttacker(IEntity attacker) {
             event.setAttacker(CraftTweakerMC.getEntity(attacker));
         }
 
+        @ZenMethod
         public void setStrength(float strength) {
             event.setStrength(strength);
         }
 
+        @ZenMethod
         public void setRatioX(double ratioX) {
             event.setRatioX(ratioX);
         }
 
+        @ZenMethod
         public void setRatioZ(double ratioZ) {
             event.setRatioZ(ratioZ);
         }
-
     }
 
 }
