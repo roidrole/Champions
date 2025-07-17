@@ -19,17 +19,15 @@
 
 package c4.champions.common.affix.filter;
 
-import c4.champions.common.affix.EnumAffix;
-
 public class AffixFilter {
 
-    private final EnumAffix affix;
+    private final String affix;
     private final boolean enabled;
     private final String[] entityBlacklist;
     private final String[] alwaysOnEntity;
     private final int tier;
 
-    public AffixFilter(EnumAffix affix, boolean enabled, String[] entityBlacklist, String[] alwaysOnEntity, int
+    public AffixFilter(String affix, boolean enabled, String[] entityBlacklist, String[] alwaysOnEntity, int
         tier) {
         this.affix = affix;
         this.enabled = enabled;
@@ -38,7 +36,7 @@ public class AffixFilter {
         this.tier = tier;
     }
 
-    public EnumAffix getAffix(){
+    public String getAffix(){
         return affix;
     }
 

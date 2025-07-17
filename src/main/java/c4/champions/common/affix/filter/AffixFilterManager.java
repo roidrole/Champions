@@ -77,20 +77,20 @@ public class AffixFilterManager {
                 Class<? extends Entity> entityClass = EntityList.getClass(new ResourceLocation(entityName));
                 ENTITY_AFFIX_MAP
                     .computeIfAbsent(entityClass, clazz -> EnumSet.noneOf(EnumAffix.class))
-                    .add(filter.getAffix());
+                    .add(EnumAffix.valueOf(filter.getAffix()));
             }
             for (String entityName : filter.getEntityBlacklist()) {
                 Class<? extends Entity> entityClass = EntityList.getClass(new ResourceLocation(entityName));
                 ENTITY_INCOMPATS_MAP
                     .computeIfAbsent(entityClass, clazz -> new BitSet(EnumAffix.length))
-                    .set(filter.getAffix().ordinal());
+                    .set(EnumAffix.valueOf(filter.getAffix()).ordinal());
             }
         }
     }
 
     private static AffixFilter[] buildDefaultAffixFilters() {
         return Arrays.stream(EnumAffix.values)
-            .map(affix -> new AffixFilter(affix, true, new String[]{}, new String[]{}, affix.getTier()))
+            .map(affix -> new AffixFilter(affix.name(), true, new String[]{}, new String[]{}, affix.getTier()))
             .toArray(AffixFilter[]::new);
     }
 }
