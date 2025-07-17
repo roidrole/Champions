@@ -121,7 +121,7 @@ public class ConfigHandler {
     @Comment("Settings for integration with the Scaling Health mod")
     public static ScalingHealth scalingHealth = new ScalingHealth();
 
-    @SuppressWarnings("staticinnerclass")
+    @SuppressWarnings({"staticinnerclass", "InnerClassMayBeStatic"})
     public static class Affix {
 
         @Name("Maximum Ability Range")
