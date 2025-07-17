@@ -9,6 +9,8 @@ This project uses MAJORMOD.MAJORAPI.MINOR.PATCH.
 - Config to (black/white)list tiers from dimensions
 - Config for Vortex to affect non-players
 - Config for Shielding affix (chance to toggle on and off)
+- Config (with CT) for Infested parasite overrides
+- Config for infested champions with max parasites to still gain HP
 - IMob requirement configurable
 - Rewrote CT integration (old one is deprecated)
   - Added rank attributor override
