@@ -181,7 +181,7 @@ public class ChampionHelper {
         //Handle preset affixes
         EnumSet<EnumAffix> output = AffixFilterManager.getPresetAffixesForEntity(entityLivingIn);
         //Includes incompat for preset affixes
-        BitSet unavailable = AffixFilterManager.getIncompatAffixesForEntity(entityLivingIn);
+        BitSet unavailable = (BitSet) AffixFilterManager.getIncompatAffixesForEntity(entityLivingIn).clone();
 
         Random random = entityLivingIn.world.rand;
         while(output.size() < size && unavailable.cardinality() < EnumAffix.length){
