@@ -72,6 +72,15 @@ public class ChampionHelper {
         }
         return (ConfigHandler.mobPermission == ConfigHandler.PermissionMode.WHITELIST && mobs.contains(entity.getClass()));
     }
+    public static boolean isValidChampion(final Class<? extends Entity> entity) {
+        if(!(EntityLiving.class.isAssignableFrom(entity) || (!ConfigHandler.peacefulChampions && IMob.class.isAssignableFrom(entity)))){
+            return false;
+        }
+        if(mobs.isEmpty()){
+            return true;
+        }
+        return (ConfigHandler.mobPermission == ConfigHandler.PermissionMode.WHITELIST && mobs.contains(entity));
+    }
 
     public static Rank generateRank(final EntityLiving entityLivingIn) {
         ImmutableSortedMap<Integer, Rank> ranks = RankManager.getRanks();

@@ -202,6 +202,7 @@ public class ConfigHandler {
             @Comment("If not shielding, the chance, every second, to activate the shield")
             public float activationChance = 0.5f;
         }
+
         public class Adaptable {
 
             @Name("Damage Reduction Increment")
@@ -261,7 +262,6 @@ public class ConfigHandler {
         }
 
         public class Infested {
-
             @Name("Silverfish Spawn Amount")
             @Comment("How many silverfish to spawn per interval")
             public int silverfishAmount = 2;
@@ -277,6 +277,10 @@ public class ConfigHandler {
             @Name("Silverfish Total Amount")
             @Comment("The total amount of silverfish a champion can house at once")
             public int silverfishTotal = 20;
+
+            @Name("Can Heal")
+            @Comment("Whether champions with the max number of parasites can heal HP")
+            public boolean canHeal = false;
         }
 
         public class Jailer {
