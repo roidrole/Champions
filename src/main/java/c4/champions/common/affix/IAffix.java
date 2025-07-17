@@ -48,37 +48,26 @@ public interface IAffix {
         return affix.getCategory().name().toLowerCase();
     }
 
-    @ZenMethod
     void onInitialSpawn(EntityLiving entity, IChampionship cap);
 
-    @ZenMethod
     void onJoinWorld(EntityLiving entity, IChampionship cap, EntityJoinWorldEvent evt);
 
-    @ZenMethod
     void onUpdate(EntityLiving entity, IChampionship cap, LivingEvent.LivingUpdateEvent evt);
 
-    @ZenMethod
     void onAttack(EntityLiving entity, IChampionship cap, LivingAttackEvent evt);
 
-    @ZenMethod
     void onAttacked(EntityLiving entity, IChampionship cap, LivingAttackEvent evt);
 
-    @ZenMethod
     void onHurt(EntityLiving entity, IChampionship cap, LivingHurtEvent evt);
 
-    @ZenMethod
     void onHealed(EntityLiving entity, IChampionship cap, LivingHealEvent evt);
 
-    @ZenMethod
     void onDamaged(EntityLiving entity, IChampionship cap, LivingDamageEvent evt);
 
-    @ZenMethod
     void onDeath(EntityLiving entity, IChampionship cap, LivingDeathEvent evt);
 
-    @ZenMethod
     void onKnockback(EntityLiving entity, IChampionship cap, LivingKnockBackEvent evt);
 
-    @ZenMethod
     boolean canApply(EntityLiving entity);
 
     @ZenMethod
