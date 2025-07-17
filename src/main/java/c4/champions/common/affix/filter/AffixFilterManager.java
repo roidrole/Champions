@@ -62,31 +62,15 @@ public class AffixFilterManager {
     }
     @Nonnull
     public static BitSet getIncompatAffixesForEntity(Entity entity) {
-        return ENTITY_INCOMPATS_MAP.computeIfAbsent(entity.getClass(), k -> new BitSet(EnumAffix.length){{
-            //Builds the incompats by scanning all filters and adding the corresponding to the BitSet, caching the result
-            //Supposes that FILTERS and EnumAffix has the same ordinal/index.
-            ResourceLocation entityKey = EntityList.getKey(k);
-            if(entityKey != null){
-                String thisId = entityKey.toString();
-                //Filters
-                for (int i = 0; i < FILTERS.length; i++) {
-                    for(String id : FILTERS[i].getEntityBlacklist()){
-                        if(id.equals(thisId)){
-                            this.set(i);
-                        }
-                    }
-                }
-                //Presets. Avoids doing it on each spawn
-                getPresetAffixesForEntity(entity).forEach(affix ->
-                    this.or(affix.incompats)
-                );
-            }
-        }});
+        return ENTITY_INCOMPATS_MAP.getOrDefault(entity.getClass(), new BitSet(EnumAffix.length));
     }
 
     public static void readAffixFiltersFromJson() {
-        FILTERS = JsonUtil.fromJson(TypeToken.get(AffixFilter[].class), new File(Loader.instance()
-            .getConfigDir(), Champions.MODID + "/affixes.json"), buildDefaultAffixFilters());
+        FILTERS = JsonUtil.fromJson(
+            TypeToken.get(AffixFilter[].class),
+            new File(Loader.instance().getConfigDir(), Champions.MODID + "/affixes.json"),
+            buildDefaultAffixFilters()
+        );
 
         for (AffixFilter filter : FILTERS) {
             for (String entityName : filter.getAlwaysOnEntity()) {
@@ -94,6 +78,12 @@ public class AffixFilterManager {
                 ENTITY_AFFIX_MAP
                     .computeIfAbsent(entityClass, clazz -> EnumSet.noneOf(EnumAffix.class))
                     .add(filter.getAffix());
+            }
+            for (String entityName : filter.getEntityBlacklist()) {
+                Class<? extends Entity> entityClass = EntityList.getClass(new ResourceLocation(entityName));
+                ENTITY_INCOMPATS_MAP
+                    .computeIfAbsent(entityClass, clazz -> new BitSet(EnumAffix.length))
+                    .set(filter.getAffix().ordinal());
             }
         }
     }
