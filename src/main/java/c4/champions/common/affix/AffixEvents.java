@@ -20,9 +20,9 @@
 package c4.champions.common.affix;
 
 import c4.champions.Champions;
+import c4.champions.common.ConfigHandler;
 import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.ConfigHandler;
 import c4.champions.common.rank.Rank;
 import c4.champions.common.rank.RankManager;
 import c4.champions.common.util.ChampionHelper;

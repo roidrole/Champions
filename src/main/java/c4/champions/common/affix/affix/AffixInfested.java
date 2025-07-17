@@ -19,12 +19,12 @@
 
 package c4.champions.common.affix.affix;
 
+import c4.champions.common.ConfigHandler;
 import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.affix.core.AffixNBT;
 import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.ConfigHandler;
 import c4.champions.common.rank.RankManager;
 import c4.champions.common.util.ChampionHelper;
 import crafttweaker.CraftTweakerAPI;

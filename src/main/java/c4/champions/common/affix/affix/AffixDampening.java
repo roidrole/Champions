@@ -19,10 +19,10 @@
 
 package c4.champions.common.affix.affix;
 
+import c4.champions.common.ConfigHandler;
 import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.ConfigHandler;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;

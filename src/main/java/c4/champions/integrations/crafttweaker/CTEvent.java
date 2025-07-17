@@ -1,6 +1,5 @@
 package c4.champions.integrations.crafttweaker;
 
-import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.damage.IDamageSource;
 import crafttweaker.api.entity.IEntity;
@@ -20,92 +19,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @SuppressWarnings("unused")
 public abstract class CTEvent {
     //CT really wasn't build for this...
-    //Default methods throw an error, subclasses override them
-    @ZenMethod
-    public IEntity getEntity(){
-        CraftTweakerAPI.logError("This event type doesn't support getEntity", new NoSuchFieldException());
-        return null;
-    }
-    @ZenMethod
-    public IEntityLivingBase getEntityLiving(){
-        CraftTweakerAPI.logError("This event type doesn't support getEntity", new NoSuchFieldException());
-        return null;
-    }
-    @ZenMethod
-    public IWorld getWorld(){
-        CraftTweakerAPI.logError("This event type doesn't support getWorld", new NoSuchFieldException());
-        return null;
-    }
-    @ZenMethod
-    public IDamageSource getSource(){
-        CraftTweakerAPI.logError("This event type doesn't support getSource", new NoSuchFieldException());
-        return null;
-    }
-    @ZenMethod
-    public float getAmount(){
-        CraftTweakerAPI.logError("This event type doesn't support getAmount", new NoSuchFieldException());
-        return 0;
-    }
-    @ZenMethod
-    public void setAmount(float amount) {
-        CraftTweakerAPI.logError("This event type doesn't support setAmount", new NoSuchFieldException());
-    }
-    @ZenMethod
-    public IEntity getAttacker(){
-        CraftTweakerAPI.logError("This event type doesn't support getAttacker", new NoSuchFieldException());
-        return null;
-    }
-    @ZenMethod
-    public float getStrength(){
-        CraftTweakerAPI.logError("This event type doesn't support getStrength", new NoSuchFieldException());
-        return 0;
-    }
-    @ZenMethod
-    public double getRatioX(){
-        CraftTweakerAPI.logError("This event type doesn't support getRatioX", new NoSuchFieldException());
-        return 0;
-    }
-    @ZenMethod
-    public double getRatioZ(){
-        CraftTweakerAPI.logError("This event type doesn't support getRatioZ", new NoSuchFieldException());
-        return 0;
-    }
-    @ZenMethod
-    public Entity getOriginalAttacker(){
-        CraftTweakerAPI.logError("This event type doesn't support getOriginalAttacker", new NoSuchFieldException());
-        return null;
-    }
-    @ZenMethod
-    public float getOriginalStrength(){
-        CraftTweakerAPI.logError("This event type doesn't support getOriginalStrength", new NoSuchFieldException());
-        return 0;
-    }
-    @ZenMethod
-    public double getOriginalRatioX(){
-        CraftTweakerAPI.logError("This event type doesn't support getOriginalRatioX", new NoSuchFieldException());
-        return 0;
-    }
-    @ZenMethod
-    public double getOriginalRatioZ(){
-        CraftTweakerAPI.logError("This event type doesn't support getOriginalRatioZ", new NoSuchFieldException());
-        return 0;
-    }
-    @ZenMethod
-    public void setAttacker(IEntity attacker){
-        CraftTweakerAPI.logError("This event type doesn't support setAttacker", new NoSuchFieldException());
-    }
-    @ZenMethod
-    public void setStrength(float strength){
-        CraftTweakerAPI.logError("This event type doesn't support setStrength", new NoSuchFieldException());
-    }
-    @ZenMethod
-    public void setRatioX(double ratioX){
-        CraftTweakerAPI.logError("This event type doesn't support setRatioX", new NoSuchFieldException());
-    }
-    @ZenMethod
-    public void setRatioZ(double ratioZ){
-        CraftTweakerAPI.logError("This event type doesn't support setRatioZ", new NoSuchFieldException());
-    }
+    //Default methods throw an error, subclasses ZenMethod them
 
     @ZenClass("mods.champion.events.EntityEvent")
     @ZenRegister
@@ -117,7 +31,6 @@ public abstract class CTEvent {
         }
 
         @ZenMethod
-        @Override
         public IEntity getEntity(){
             return CraftTweakerMC.getIEntity(event.getEntity());
         }
@@ -133,7 +46,7 @@ public abstract class CTEvent {
             this.event = event;
         }
 
-        @Override
+        @ZenMethod
         public IEntityLivingBase getEntityLiving(){
             return CraftTweakerMC.getIEntityLivingBase(event.getEntityLiving());
         }
@@ -149,7 +62,7 @@ public abstract class CTEvent {
             this.event = event;
         }
 
-        @Override
+        @ZenMethod
         public IWorld getWorld(){
             return CraftTweakerMC.getIWorld(event.getWorld());
         }
@@ -165,12 +78,12 @@ public abstract class CTEvent {
             this.event = event;
         }
 
-        @Override
+        @ZenMethod
         public IDamageSource getSource() {
             return CraftTweakerMC.getIDamageSource(event.getSource());
         }
 
-        @Override
+        @ZenMethod
         public float getAmount() {
             return event.getAmount();
         }
@@ -186,17 +99,17 @@ public abstract class CTEvent {
             this.event = event;
         }
 
-        @Override
+        @ZenMethod
         public IDamageSource getSource() {
             return CraftTweakerMC.getIDamageSource(event.getSource());
         }
 
-        @Override
+        @ZenMethod
         public float getAmount() {
             return event.getAmount();
         }
 
-        @Override
+        @ZenMethod
         public void setAmount(float amount) {
             event.setAmount(amount);
         }
@@ -212,12 +125,12 @@ public abstract class CTEvent {
             this.event = event;
         }
 
-        @Override
+        @ZenMethod
         public float getAmount() {
             return event.getAmount();
         }
 
-        @Override
+        @ZenMethod
         public void setAmount(float amount) {
             event.setAmount(amount);
         }
@@ -233,17 +146,17 @@ public abstract class CTEvent {
             this.event = event;
         }
 
-        @Override
+        @ZenMethod
         public IDamageSource getSource() {
             return CraftTweakerMC.getIDamageSource(event.getSource());
         }
 
-        @Override
+        @ZenMethod
         public float getAmount() {
             return event.getAmount();
         }
 
-        @Override
+        @ZenMethod
         public void setAmount(float amount) {
             event.setAmount(amount);
         }
@@ -259,7 +172,7 @@ public abstract class CTEvent {
             this.event = event;
         }
 
-        @Override
+        @ZenMethod
         public IDamageSource getSource() {
             return CraftTweakerMC.getIDamageSource(event.getSource());
         }
@@ -275,62 +188,62 @@ public abstract class CTEvent {
             this.event = event;
         }
 
-        @Override
+        @ZenMethod
         public IEntity getAttacker() {
             return CraftTweakerMC.getIEntity(event.getAttacker());
         }
 
-        @Override
+        @ZenMethod
         public float getStrength() {
             return event.getStrength();
         }
 
-        @Override
+        @ZenMethod
         public double getRatioX() {
             return event.getRatioX();
         }
 
-        @Override
+        @ZenMethod
         public double getRatioZ() {
             return event.getRatioZ();
         }
 
-        @Override
+        @ZenMethod
         public Entity getOriginalAttacker() {
             return event.getOriginalAttacker();
         }
 
-        @Override
+        @ZenMethod
         public float getOriginalStrength() {
             return event.getOriginalStrength();
         }
 
-        @Override
+        @ZenMethod
         public double getOriginalRatioX() {
             return event.getOriginalRatioX();
         }
 
-        @Override
+        @ZenMethod
         public double getOriginalRatioZ() {
             return event.getOriginalRatioZ();
         }
 
-        @Override
+        @ZenMethod
         public void setAttacker(IEntity attacker) {
             event.setAttacker(CraftTweakerMC.getEntity(attacker));
         }
 
-        @Override
+        @ZenMethod
         public void setStrength(float strength) {
             event.setStrength(strength);
         }
 
-        @Override
+        @ZenMethod
         public void setRatioX(double ratioX) {
             event.setRatioX(ratioX);
         }
 
-        @Override
+        @ZenMethod
         public void setRatioZ(double ratioZ) {
             event.setRatioZ(ratioZ);
         }

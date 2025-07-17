@@ -20,10 +20,10 @@
 package c4.champions.common.util;
 
 import c4.champions.Champions;
+import c4.champions.common.ConfigHandler;
+import c4.champions.common.affix.AffixFilter;
 import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.affix.core.AffixCategory;
-import c4.champions.common.affix.AffixFilter;
-import c4.champions.common.ConfigHandler;
 import c4.champions.common.potion.PotionPlague;
 import c4.champions.common.rank.Rank;
 import c4.champions.common.rank.RankManager;

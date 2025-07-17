@@ -1,4 +1,3 @@
-
 import mods.champion.IAffix;
 import mods.champion.AffixBuilder;
 import crafttweaker.entity.IEntityLiving;

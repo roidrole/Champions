@@ -32,16 +32,27 @@ public class AffixBuilder implements IAffix{
     }
 
     public ChampionInitialSpawn onInitialSpawn = ((entity, cap) -> {});
+    @SuppressWarnings("unchecked")
     public ChampionEventHandler<EntityJoinWorldEvent> onJoinWorld = ChampionEventHandler.empty;
+    @SuppressWarnings("unchecked")
     public ChampionEventHandler<LivingEvent.LivingUpdateEvent> onUpdate = ChampionEventHandler.empty;
+    @SuppressWarnings("unchecked")
     public ChampionEventHandler<LivingAttackEvent> onAttack = ChampionEventHandler.empty;
+    @SuppressWarnings("unchecked")
     public ChampionEventHandler<LivingAttackEvent> onAttacked = ChampionEventHandler.empty;
+    @SuppressWarnings("unchecked")
     public ChampionEventHandler<LivingHurtEvent> onHurt = ChampionEventHandler.empty;
+    @SuppressWarnings("unchecked")
     public ChampionEventHandler<LivingHealEvent> onHealed = ChampionEventHandler.empty;
+    @SuppressWarnings("unchecked")
     public ChampionEventHandler<LivingDamageEvent> onDamaged = ChampionEventHandler.empty;
+    @SuppressWarnings("unchecked")
     public ChampionEventHandler<LivingDeathEvent> onDeath = ChampionEventHandler.empty;
+    @SuppressWarnings("unchecked")
     public ChampionEventHandler<LivingKnockBackEvent> onKnockback = ChampionEventHandler.empty;
+    @SuppressWarnings("unchecked")
     public BooleanFunction<EntityLiving> canApply = BooleanFunction.alwaysTrue;
+    @SuppressWarnings("unchecked")
     public BooleanFunction<IAffix> compatibleWith = BooleanFunction.alwaysTrue;
 
 
@@ -69,55 +80,55 @@ public class AffixBuilder implements IAffix{
     }
     @ZenMethod
     @SuppressWarnings("unused")
-    public void setOnJoinWorld(CTChampionEventHandler<CTEvent.CTJoinWorld> handler){
+    public void setOnJoinWorld(CTChampionEventHandlerCTJoinWorld handler){
         this.onJoinWorld = (entity, chp, evt) ->
             handler.apply(CraftTweakerMC.getIEntityLiving(entity), chp, new CTEvent.CTJoinWorld(evt));
     }
     @ZenMethod
     @SuppressWarnings("unused")
-    public void setOnUpdate(CTChampionEventHandler<CTEvent.CTLivingEvent> handler){
+    public void setOnUpdate(CTChampionEventHandlerCTLivingEvent handler){
         this.onUpdate = (entity, chp, evt) ->
             handler.apply(CraftTweakerMC.getIEntityLiving(entity), chp, new CTEvent.CTLivingEvent(evt));
     }
     @ZenMethod
     @SuppressWarnings("unused")
-    public void setOnAttack(CTChampionEventHandler<CTEvent.CTAttackEvent> handler){
+    public void setOnAttack(CTChampionEventHandlerCTAttackEvent handler){
         this.onAttack = (entity, chp, evt) ->
             handler.apply(CraftTweakerMC.getIEntityLiving(entity), chp, new CTEvent.CTAttackEvent(evt));
     }
     @ZenMethod
     @SuppressWarnings("unused")
-    public void setOnAttacked(CTChampionEventHandler<CTEvent.CTAttackEvent> handler){
+    public void setOnAttacked(CTChampionEventHandlerCTAttackEvent handler){
         this.onAttacked = (entity, chp, evt) ->
             handler.apply(CraftTweakerMC.getIEntityLiving(entity), chp, new CTEvent.CTAttackEvent(evt));
     }
     @ZenMethod
     @SuppressWarnings("unused")
-    public void setOnHurt(CTChampionEventHandler<CTEvent.CTHurtEvent> handler){
+    public void setOnHurt(CTChampionEventHandlerCTHurtEvent handler){
         this.onHurt = (entity, chp, evt) ->
             handler.apply(CraftTweakerMC.getIEntityLiving(entity), chp, new CTEvent.CTHurtEvent(evt));
     }
     @ZenMethod
     @SuppressWarnings("unused")
-    public void setOnHealed(CTChampionEventHandler<CTEvent.CTHealEvent> handler){
+    public void setOnHealed(CTChampionEventHandlerCTHealEvent handler){
         this.onHealed = (entity, chp, evt) ->
             handler.apply(CraftTweakerMC.getIEntityLiving(entity), chp, new CTEvent.CTHealEvent(evt));
     }
     @ZenMethod
     @SuppressWarnings("unused")
-    public void setOnDamaged(CTChampionEventHandler<CTEvent.CTDamageEvent> handler){
+    public void setOnDamaged(CTChampionEventHandlerCTDamageEvent handler){
         this.onDamaged = (entity, chp, evt) ->
             handler.apply(CraftTweakerMC.getIEntityLiving(entity), chp, new CTEvent.CTDamageEvent(evt));
     }
     @ZenMethod
     @SuppressWarnings("unused")
-    public void setOnDeath(CTChampionEventHandler<CTEvent.CTDeathEvent> handler){
+    public void setOnDeath(CTChampionEventHandlerCTDeathEvent handler){
         this.onDeath = (entity, chp, evt) ->
             handler.apply(CraftTweakerMC.getIEntityLiving(entity), chp, new CTEvent.CTDeathEvent(evt));
     }
     @ZenMethod
     @SuppressWarnings("unused")
-    public void setOnKnockback(CTChampionEventHandler<CTEvent.CTKnockbackEvent> handler){
+    public void setOnKnockback(CTChampionEventHandlerCTKnockbackEvent handler){
         this.onKnockback = (entity, chp, evt) ->
             handler.apply(CraftTweakerMC.getIEntityLiving(entity), chp, new CTEvent.CTKnockbackEvent(evt));
     }
@@ -220,7 +231,36 @@ public class AffixBuilder implements IAffix{
         void apply(IEntityLivingBase entity, IChampionship cap);
     }
     @FunctionalInterface
-    public interface CTChampionEventHandler<E extends CTEvent>{
-        void apply(IEntityLiving entity, IChampionship cap, E evt);
+    public interface CTChampionEventHandlerCTLivingEvent{
+        void apply(IEntityLiving entity, IChampionship cap, CTEvent.CTLivingEvent evt);
     }
+    @FunctionalInterface
+    public interface CTChampionEventHandlerCTJoinWorld{
+        void apply(IEntityLiving entity, IChampionship cap, CTEvent.CTJoinWorld evt);
+    }
+    @FunctionalInterface
+    public interface CTChampionEventHandlerCTAttackEvent{
+        void apply(IEntityLiving entity, IChampionship cap, CTEvent.CTAttackEvent evt);
+    }
+    @FunctionalInterface
+    public interface CTChampionEventHandlerCTHurtEvent{
+        void apply(IEntityLiving entity, IChampionship cap, CTEvent.CTHurtEvent evt);
+    }
+    @FunctionalInterface
+    public interface CTChampionEventHandlerCTHealEvent{
+        void apply(IEntityLiving entity, IChampionship cap, CTEvent.CTHealEvent evt);
+    }
+    @FunctionalInterface
+    public interface CTChampionEventHandlerCTDamageEvent{
+        void apply(IEntityLiving entity, IChampionship cap, CTEvent.CTDamageEvent evt);
+    }
+    @FunctionalInterface
+    public interface CTChampionEventHandlerCTDeathEvent{
+        void apply(IEntityLiving entity, IChampionship cap, CTEvent.CTDeathEvent evt);
+    }
+    @FunctionalInterface
+    public interface CTChampionEventHandlerCTKnockbackEvent{
+        void apply(IEntityLiving entity, IChampionship cap, CTEvent.CTKnockbackEvent evt);
+    }
+    
 }
