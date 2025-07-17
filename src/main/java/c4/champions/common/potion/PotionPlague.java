@@ -20,7 +20,7 @@
 package c4.champions.common.potion;
 
 import c4.champions.Champions;
-import c4.champions.common.config.ConfigHandler;
+import c4.champions.common.ConfigHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.EntityLivingBase;

@@ -25,7 +25,7 @@ import c4.champions.command.CommandSpawnChampionAt;
 import c4.champions.common.EventHandlerCommon;
 import c4.champions.common.affix.AffixEvents;
 import c4.champions.common.affix.EnumAffix;
-import c4.champions.common.affix.filter.AffixFilterManager;
+import c4.champions.common.affix.AffixFilter;
 import c4.champions.common.capability.CapabilityChampionship;
 import c4.champions.common.init.ChampionsRegistry;
 import c4.champions.common.item.ItemChampionPlacer;
@@ -109,7 +109,7 @@ public class Champions
         }
         EnumAffix.registerCompats();
         RankManager.readRanksFromJson();
-        AffixFilterManager.readAffixFiltersFromJson();
+        AffixFilter.buildAffixFilters();
         ChampionHelper.parseConfigs();
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ChampionsRegistry.championEgg, new BehaviorDefaultDispenseItem() {
 

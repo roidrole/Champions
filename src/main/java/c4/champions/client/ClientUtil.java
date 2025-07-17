@@ -22,7 +22,7 @@ package c4.champions.client;
 import c4.champions.Champions;
 import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.capability.IChampionship;
-import c4.champions.common.config.ConfigHandler;
+import c4.champions.common.ConfigHandler;
 import com.google.common.base.Predicates;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -209,8 +209,7 @@ public class ClientUtil {
         }
     }
 
-    private static void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width,
-                                              int height) {
+    private static void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height) {
         float u = 0.00390625F;
         float v = 0.00390625F;
         Tessellator tessellator = Tessellator.getInstance();

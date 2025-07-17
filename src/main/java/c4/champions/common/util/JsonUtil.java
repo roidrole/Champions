@@ -40,7 +40,7 @@ public class JsonUtil {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-    public static <T> T[] fromJson(@Nonnull TypeToken<T[]> token, @Nonnull File file, @Nonnull T[] defaults) {
+    public static <T> T fromJson(@Nonnull TypeToken<T> token, @Nonnull File file, @Nonnull T defaults) {
 
         if (!file.exists()) {
             toJson(token, file, defaults);
@@ -56,7 +56,7 @@ public class JsonUtil {
         }
     }
 
-    private static <T> void toJson(@Nonnull TypeToken<T[]> token, @Nonnull File file, @Nonnull T[] defaults) {
+    private static <T> void toJson(@Nonnull TypeToken<T> token, @Nonnull File file, @Nonnull T defaults) {
 
         if (!file.exists()) {
             try {
@@ -75,7 +75,7 @@ public class JsonUtil {
         }
     }
 
-    private static <T> String getJson(@Nonnull T[] elements, @Nonnull TypeToken<T[]> token) {
+    private static <T> String getJson(@Nonnull T elements, @Nonnull TypeToken<T> token) {
         return GSON.toJson(elements, token.getType());
     }
 }

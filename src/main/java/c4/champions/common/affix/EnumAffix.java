@@ -54,6 +54,7 @@ public enum EnumAffix implements IAffix{
     CINDER(new AffixCinder());
 
     public final IAffix affix;
+    public AffixFilter filter;
     public BitSet incompats;
     public static final EnumMap<AffixCategory, BitSet> categorySetMap = new EnumMap<AffixCategory, BitSet>(AffixCategory.class){{
         for(AffixCategory category : AffixCategory.values){
