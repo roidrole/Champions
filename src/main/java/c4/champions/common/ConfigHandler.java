@@ -32,9 +32,17 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Config(modid = Champions.MODID)
 public class ConfigHandler {
 
+    @Name("Show Particles")
+    @Comment("Whether the potion effects linked to tiers should have particles\nOriginally implemented in FermiumMixins")
+    public static boolean showParticles = true;
+
     @Name("Peaceful Mobs as Champions")
     @Comment("Sets whether mobs not implementing IMob (peaceful mobs) can be champions")
     public static boolean peacefulChampions = false;
+
+    @Name("Ownable Mobs as Champions")
+    @Comment("Sets whether mobs implementing Ownable (pets) can be champions")
+    public static boolean ownableChampions = false;
 
     @Name("Hide Champion Effects")
     @Comment("Set whether to hide champion particles and HUD effects")
@@ -282,6 +290,10 @@ public class ConfigHandler {
             @Name("Can Heal")
             @Comment("Whether champions with the max number of parasites can heal HP")
             public boolean canHeal = false;
+
+            @Name("Parasites drop XP and items")
+            @Comment("Duplicate of FermiumMixins' functionality. If false, prevents farming by disallowing drops")
+            public boolean parasitesDropItems = true;
         }
 
         public class Jailer {
@@ -289,6 +301,10 @@ public class ConfigHandler {
             @Name("Chance per Attack")
             @Comment("The percent chance that an attack will jail targets")
             public double chance = 0.2d;
+
+            @Name("Jail Duration")
+            @Comment("The duration of the jail effect, in ticks")
+            public int duration = 5;
         }
 
         public class Knockback {
@@ -445,7 +461,7 @@ public class ConfigHandler {
         public String[] spawnModifiers = new String[]{};
     }
 
-    public static class ChampionNames{
+    public static class ChampionNames {
         @Name("Champion Names")
         @Comment("Number of prefixes in the pool of prefixes given to champions.\n This mod adds 24")
         public int championPrefixes = 24;

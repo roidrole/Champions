@@ -59,7 +59,7 @@ public class AffixEvents {
                     if (potions != null) {
 
                         for (Tuple<Potion, Integer> potion : potions) {
-                            living.addPotionEffect(new PotionEffect(potion.getFirst(), 200, potion.getSecond()));
+                            living.addPotionEffect(new PotionEffect(potion.getFirst(), 200, potion.getSecond(), false, ConfigHandler.showParticles));
                         }
                     }
                 }

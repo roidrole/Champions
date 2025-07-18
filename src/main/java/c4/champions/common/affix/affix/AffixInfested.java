@@ -41,11 +41,17 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityEndermite;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.monster.EntitySilverfish;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -64,8 +70,13 @@ public class AffixInfested extends AffixBase {
         put(EntityShulker.class, EntityEndermite.class);
         put(EntityDragon.class, EntityEndermite.class);
     }};
+    public static String parasiteMarkerKey = "champions:parasite";
     public AffixInfested() {
         super("infested", AffixCategory.OFFENSE);
+
+        if(!ConfigHandler.affix.infested.parasitesDropItems){
+            MinecraftForge.EVENT_BUS.register(new InfestedLootHandler());
+        }
     }
 
     @Override
@@ -118,6 +129,9 @@ public class AffixInfested extends AffixBase {
                 para = parasite.getConstructor(World.class).newInstance(world);
             } catch (Exception e) {
                 para = new EntitySilverfish(world);
+            }
+            if(!ConfigHandler.affix.infested.parasitesDropItems){
+                para.getEntityData().setBoolean(parasiteMarkerKey, true);
             }
             para.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
             if(para instanceof EntityLiving) {
@@ -210,5 +224,31 @@ public class AffixInfested extends AffixBase {
     public static void setDefaultParasite(IEntityDefinition parasite){
         Class<? extends Entity> parasiteClass = ((EntityEntry)parasite.getInternal()).getEntityClass();
         parasitesOverrides.put(EntityLiving.class, parasiteClass);
+    }
+
+    //Taken from FermiumMixins, modified the NBT key
+    public static class InfestedLootHandler {
+
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public void livingExperienceDropEvent(LivingExperienceDropEvent event) {
+            if(event.getEntityLiving() != null) {
+                NBTTagCompound data = event.getEntityLiving().getEntityData();
+                if(data.getBoolean(AffixInfested.parasiteMarkerKey)) {
+                    event.setDroppedExperience(0);
+                    event.setCanceled(true);
+                }
+            }
+        }
+
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public void livingDropsEvent(LivingDropsEvent event) {
+            if(event.getEntityLiving() != null) {
+                NBTTagCompound data = event.getEntityLiving().getEntityData();
+                if(data.getBoolean(AffixInfested.parasiteMarkerKey)) {
+                    event.getDrops().clear();
+                    event.setCanceled(true);
+                }
+            }
+        }
     }
 }

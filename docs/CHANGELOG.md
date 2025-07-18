@@ -7,22 +7,27 @@ This project uses MAJORMOD.MAJORAPI.MINOR.PATCH.
 ## [1.1.0.0] - Unreleased
 ### Added
 #### Config additions :
+- IMob requirement configurable (includes RotN edition changes)
 - (black/white)list tiers from dimensions
 - Vortex Affix affecting non-players
 - Shielding affix's chance to toggle on and off
 - Infested champions with max parasites still gaining HP
-- IMob requirement configurable
+- Parasites (mobs spawned by Infected) dropping nothing (from FermiumMixins)
+- Jailer effect duration (allows fix from FermiumMixins)
 #### CT Integration additions :
 - Added rank attributor override
 - Added affix attributor override
 - Infested parasite overrides (& defaults)
 - Custom affixes
 
+Also added all changes from FermiumMixins, except for no infernal champions
 ### Changed
 - config/champions/affixes.json format. Please regenerate
 - Affix NBT format. Old champions will lose their affixes
 - Rewrote a bunch of the internals, should perform better
 - Rewrote CT integration (old one is deprecated)
+- Champion death message uses the champion's name
+- Hide particle of tier-related potion effects (toggleable by config) (originally implemented in FermiumMixins)
 
 ## [1.0.11.10] - variable
 ### Original Edition - 2021.01.22
@@ -30,6 +35,8 @@ This project uses MAJORMOD.MAJORAPI.MINOR.PATCH.
 - Fixed Cinder Spark death message [#60](https://github.com/TheIllusiveC4/Champions/pull/60)
 ### RotN Edition - 2020.09.06
 - Remove IMob requirement
+
+Roid's Edition of the mod, in version 1.1.0.0 merges both of these changes
 
 ## [1.0.11.9] - 2020.07.20
 ### Added

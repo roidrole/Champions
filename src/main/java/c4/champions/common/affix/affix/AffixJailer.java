@@ -42,7 +42,7 @@ public class AffixJailer extends AffixBase {
         EntityLivingBase target = evt.getEntityLiving();
         if (!entity.world.isRemote && entity.getRNG().nextFloat() < ConfigHandler.affix.jailer.chance &&
                 !target.isPotionActive(ChampionsRegistry.jailed)) {
-            target.addPotionEffect(new PotionEffect(ChampionsRegistry.jailed, 5, 0, false, false));
+            target.addPotionEffect(new PotionEffect(ChampionsRegistry.jailed, ConfigHandler.affix.jailer.duration, 0, false, false));
             EntityJail jail = new EntityJail(entity.world, target.posX, target.posY, target.posZ);
             jail.setPrisoner(target);
             entity.world.spawnEntity(jail);

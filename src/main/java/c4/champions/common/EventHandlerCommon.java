@@ -66,7 +66,7 @@ public class EventHandlerCommon {
             int messageTier = ConfigHandler.deathMessageTier;
 
             if (messageTier > 0 && chp != null && ChampionHelper.isElite(chp.getRank()) && chp.getRank().getTier() >= messageTier) {
-                entityLivingBase.getServer().getPlayerList().sendMessage(new TextComponentTranslation("champions.identifier")
+                entityLivingBase.getServer().getPlayerList().sendMessage(new TextComponentTranslation(chp.getName())
                         .appendSibling(new TextComponentString(" "))
                         .appendSibling(entityLivingBase.getCombatTracker().getDeathMessage()));
             }

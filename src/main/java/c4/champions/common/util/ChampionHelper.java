@@ -38,6 +38,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -64,7 +65,11 @@ public class ChampionHelper {
     private static final Map<Class<? extends Entity>, Tuple<Integer, Integer>> champions = Maps.newHashMap();
 
     public static boolean isValidChampion(final Entity entity) {
-        if(!(entity instanceof EntityLiving) || (!ConfigHandler.peacefulChampions && !(entity instanceof IMob))){
+        if(
+            !(entity instanceof EntityLiving) ||
+            (!ConfigHandler.peacefulChampions && !(entity instanceof IMob)) ||
+            (!ConfigHandler.ownableChampions && entity instanceof IEntityOwnable)
+        ){
             return false;
         }
         if(mobs.isEmpty()){
@@ -73,7 +78,11 @@ public class ChampionHelper {
         return (ConfigHandler.mobPermission == ConfigHandler.PermissionMode.WHITELIST && mobs.contains(entity.getClass()));
     }
     public static boolean isValidChampion(final Class<? extends Entity> entity) {
-        if(!(EntityLiving.class.isAssignableFrom(entity) || (!ConfigHandler.peacefulChampions && IMob.class.isAssignableFrom(entity)))){
+        if(
+            !(EntityLiving.class.isAssignableFrom(entity) ||
+            (!ConfigHandler.peacefulChampions && !IMob.class.isAssignableFrom(entity))) ||
+            (!ConfigHandler.ownableChampions && IEntityOwnable.class.isAssignableFrom(entity))
+        ){
             return false;
         }
         if(mobs.isEmpty()){
