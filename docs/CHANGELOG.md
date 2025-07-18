@@ -6,20 +6,23 @@ This project uses MAJORMOD.MAJORAPI.MINOR.PATCH.
 
 ## [1.1.0.0] - Unreleased
 ### Added
-- Config to (black/white)list tiers from dimensions
-- Config for Vortex to affect non-players
-- Config for Shielding affix (chance to toggle on and off)
-- Config (with CT) for Infested parasite overrides
-- Config for infested champions with max parasites to still gain HP
+#### Config additions :
+- (black/white)list tiers from dimensions
+- Vortex Affix affecting non-players
+- Shielding affix's chance to toggle on and off
+- Infested champions with max parasites still gaining HP
 - IMob requirement configurable
-- Rewrote CT integration (old one is deprecated)
-  - Added rank attributor override
-  - Added affix attributor override
+#### CT Integration additions :
+- Added rank attributor override
+- Added affix attributor override
+- Infested parasite overrides (& defaults)
+- Custom affixes
 
 ### Changed
-- config/chapions/affixes.json format. Regenerate
-- Changed Affix NBT format. Old champions won't be champions anymore
+- config/champions/affixes.json format. Please regenerate
+- Affix NBT format. Old champions will lose their affixes
 - Rewrote a bunch of the internals, should perform better
+- Rewrote CT integration (old one is deprecated)
 
 ## [1.0.11.10] - variable
 ### Original Edition - 2021.01.22

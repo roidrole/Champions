@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 /*
 * Derivative of info.tehnut.soulshardrespawn.core.util.JsonUtil from Soul Shards Respawn by TehNut
@@ -40,24 +41,21 @@ public class JsonUtil {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-    public static <T> T fromJson(@Nonnull TypeToken<T> token, @Nonnull File file, @Nonnull T defaults) {
-
+    public static <T> T fromJson(@Nonnull TypeToken<T> token, @Nonnull File file, @Nonnull Supplier<T> defaults) {
         if (!file.exists()) {
-            toJson(token, file, defaults);
-            return defaults;
-        } else {
+            toJson(token, file, defaults.get());
+            return defaults.get();
+        }
 
-            try (FileReader reader = new FileReader(file)) {
-                return GSON.fromJson(reader, token.getType());
-            } catch (IOException e) {
-                Champions.logger.log(Level.ERROR, "Error reading Json file");
-                return defaults;
-            }
+        try (FileReader reader = new FileReader(file)) {
+            return GSON.fromJson(reader, token.getType());
+        } catch (IOException e) {
+            Champions.logger.log(Level.ERROR, "Error reading Json file");
+            return defaults.get();
         }
     }
 
     private static <T> void toJson(@Nonnull TypeToken<T> token, @Nonnull File file, @Nonnull T defaults) {
-
         if (!file.exists()) {
             try {
                 FileUtils.forceMkdirParent(file);

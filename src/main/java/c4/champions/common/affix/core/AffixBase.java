@@ -20,6 +20,7 @@
 package c4.champions.common.affix.core;
 
 import c4.champions.common.ConfigHandler;
+import c4.champions.common.affix.AffixFilter;
 import c4.champions.common.affix.IAffix;
 import c4.champions.common.capability.IChampionship;
 import net.minecraft.entity.EntityLiving;
@@ -111,13 +112,13 @@ public class AffixBase implements IAffix {
     }
 
     @Override
-    public boolean isCompatibleWith(IAffix affix) {
-        return affix != this;
+    public AffixFilter getFilter() {
+        return null;
     }
 
     @Override
-    public int getTier() {
-        return tier;
+    public boolean isCompatibleWith(IAffix affix) {
+        return affix != this;
     }
 
     public static boolean isValidAffixTarget(EntityLiving mob, EntityLivingBase target, boolean checkSight) {

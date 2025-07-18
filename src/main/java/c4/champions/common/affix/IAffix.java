@@ -70,9 +70,8 @@ public interface IAffix {
 
     boolean canApply(EntityLiving entity);
 
-    @ZenMethod
-    boolean isCompatibleWith(IAffix affix);
+    AffixFilter getFilter();
 
     @ZenMethod
-    int getTier();
+    boolean isCompatibleWith(IAffix affix);
 }

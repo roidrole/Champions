@@ -20,6 +20,7 @@
 package c4.champions.common.affix.affix;
 
 import c4.champions.common.ConfigHandler;
+import c4.champions.common.affix.AffixFilter;
 import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.affix.core.AffixNBT;
@@ -31,6 +32,7 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.entity.IEntityDefinition;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -49,12 +51,15 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @ZenClass("mods.champion.affixes.AffixInfested")
 @ZenRegister
 public class AffixInfested extends AffixBase {
     public static Map<Class<? extends EntityLiving>, Class<? extends Entity>> parasitesOverrides = new HashMap<Class<? extends EntityLiving>, Class<? extends Entity>>(8){{
+        put(EntityLiving.class, EntitySilverfish.class);
         put(EntityEnderman.class, EntityEndermite.class);
         put(EntityShulker.class, EntityEndermite.class);
         put(EntityDragon.class, EntityEndermite.class);
@@ -101,11 +106,12 @@ public class AffixInfested extends AffixBase {
                 target = (EntityLivingBase) evt.getSource().getTrueSource();
             }
 
-            spawnParasites(entity.world, entity, target, buffer.num, parasitesOverrides.get(entity.getClass()));
+            spawnParasites(entity.world, entity, target, buffer.num);
         }
     }
 
-    private int spawnParasites(World world, EntityLiving entity, EntityLivingBase target, int amount, Class<? extends Entity> parasite) {
+    private int spawnParasites(World world, EntityLiving entity, EntityLivingBase target, int amount) {
+        Class<? extends Entity> parasite = parasitesOverrides.getOrDefault(entity.getClass(), parasitesOverrides.get(EntityLiving.class));
         for (int i = 0; i < amount; i++) {
             Entity para;
             try {
@@ -131,8 +137,10 @@ public class AffixInfested extends AffixBase {
     }
 
     @Override
-    public boolean canApply(EntityLiving entity) {
-        return !parasitesOverrides.containsValue(entity.getClass()) && !(entity instanceof EntitySilverfish);
+    public AffixFilter getFilter() {
+        Set<String> output = new HashSet<>(4);
+        parasitesOverrides.values().forEach(value -> output.add(EntityList.getKey(value).toString()));
+        return new AffixFilter(output.toArray(new String[0]));
     }
 
     class AISpawnParasite extends EntityAIBase {
@@ -170,7 +178,7 @@ public class AffixInfested extends AffixBase {
 
                     if (this.attackTime <= 0 && buffer.num > 0) {
                         this.attackTime = ConfigHandler.affix.desecrator.attackInterval + entity.getRNG().nextInt(5) * 10;
-                        int parasites = spawnParasites(entity.world, entity, target, ConfigHandler.affix.infested.silverfishAmount, parasitesOverrides.get(entity.getClass()));
+                        int parasites = spawnParasites(entity.world, entity, target, ConfigHandler.affix.infested.silverfishAmount);
 
                         buffer.num = Math.max(0, buffer.num - parasites);
                         buffer.saveData(entity);
@@ -196,5 +204,11 @@ public class AffixInfested extends AffixBase {
     @SuppressWarnings("unused")
     public static void removeParasiteOverride(IEntityDefinition entity){
         parasitesOverrides.remove(((EntityEntry)entity.getInternal()).getEntityClass());
+    }
+    @ZenMethod
+    @SuppressWarnings("unused")
+    public static void setDefaultParasite(IEntityDefinition parasite){
+        Class<? extends Entity> parasiteClass = ((EntityEntry)parasite.getInternal()).getEntityClass();
+        parasitesOverrides.put(EntityLiving.class, parasiteClass);
     }
 }

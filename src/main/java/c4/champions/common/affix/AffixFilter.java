@@ -28,10 +28,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 
 import java.io.File;
-import java.util.BitSet;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class AffixFilter {
 
@@ -43,6 +40,9 @@ public class AffixFilter {
         this.entityBlacklist = entityBlacklist;
         this.alwaysOnEntity = alwaysOnEntity;
         this.tier = tier;
+    }
+    public AffixFilter(String[] entityBlacklist) {
+        this(entityBlacklist, new String[]{}, 1);
     }
 
 
@@ -66,8 +66,14 @@ public class AffixFilter {
         Map<String, AffixFilter> filters = JsonUtil.fromJson(
             new TypeToken<Map<String, AffixFilter>>(){},
             new File(Loader.instance().getConfigDir(), Champions.MODID + "/affixes.json"),
-            new HashMap<String, AffixFilter>() {{
-                put("DEFAULT", new AffixFilter(new String[]{}, new String[]{}, 0));
+            () -> new LinkedHashMap<String, AffixFilter>() {{
+                put("DEFAULT", new AffixFilter(new String[]{}));
+                for(EnumAffix affix : EnumAffix.values){
+                    AffixFilter filter = affix.affix.getFilter();
+                    if(filter != null){
+                        put(affix.name(), filter);
+                    }
+                }
             }}
         );
 

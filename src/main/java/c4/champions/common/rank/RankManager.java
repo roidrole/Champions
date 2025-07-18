@@ -78,7 +78,7 @@ public class RankManager {
 
     public static void readRanksFromJson() {
         Rank[] ranks = JsonUtil.fromJson(TypeToken.get(Rank[].class), new File(Loader.instance().getConfigDir(),
-                Champions.MODID + "/ranks.json"), DEFAULT_RANKS);
+                Champions.MODID + "/ranks.json"), () -> DEFAULT_RANKS);
 
         for (Rank rank : ranks) {
             RANKS.put(rank.getTier(), rank);

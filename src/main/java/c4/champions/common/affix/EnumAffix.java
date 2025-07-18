@@ -158,16 +158,16 @@ public enum EnumAffix implements IAffix{
     }
 
     @Override
+    public AffixFilter getFilter() {
+        return this.filter;
+    }
+
+    @Override
     public boolean isCompatibleWith(IAffix affix) {
         if(affix instanceof EnumAffix){
             return !(incompats.get(((EnumAffix) affix).ordinal()));
         } else {
             return this.affix.isCompatibleWith(affix);
         }
-    }
-
-    @Override
-    public int getTier() {
-        return this.affix.getTier();
     }
 }

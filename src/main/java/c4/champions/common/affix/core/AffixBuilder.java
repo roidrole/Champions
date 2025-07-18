@@ -1,5 +1,6 @@
 package c4.champions.common.affix.core;
 
+import c4.champions.common.affix.AffixFilter;
 import c4.champions.common.affix.EnumAffix;
 import c4.champions.common.affix.IAffix;
 import c4.champions.common.capability.IChampionship;
@@ -13,7 +14,6 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.fml.common.eventhandler.Event;
-import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -23,12 +23,10 @@ public class AffixBuilder implements IAffix{
 
     private final String identifier;
     private final AffixCategory category;
-    private final int tier;
 
-    public AffixBuilder(String identifier, AffixCategory category, int tier) {
+    public AffixBuilder(String identifier, AffixCategory category) {
         this.identifier = identifier;
         this.category = category;
-        this.tier = tier;
     }
 
     public ChampionInitialSpawn onInitialSpawn = ((entity, cap) -> {});
@@ -59,10 +57,9 @@ public class AffixBuilder implements IAffix{
 
     @ZenMethod
     @SuppressWarnings("unused")
-    public static AffixBuilder createAffix(String identifier, String category, @Optional int tier){
-        if(tier == 0){tier = 1;}
+    public static AffixBuilder createAffix(String identifier, String category){
         AffixCategory cat = AffixCategory.valueOf(category.toUpperCase());
-        return new AffixBuilder(identifier, cat, tier);
+        return new AffixBuilder(identifier, cat);
     }
 
     @SuppressWarnings("unused")
@@ -155,10 +152,6 @@ public class AffixBuilder implements IAffix{
     public AffixCategory getCategory() {
         return category;
     }
-    @Override
-    public int getTier() {
-        return tier;
-    }
 
     //IAffix methods
     @Override
@@ -205,6 +198,12 @@ public class AffixBuilder implements IAffix{
     public boolean canApply(EntityLiving entity){
         return this.canApply.apply(entity);
     }
+
+    @Override
+    public AffixFilter getFilter() {
+        return null;
+    }
+
     @Override
     public boolean isCompatibleWith(IAffix affix) {
         return this.compatibleWith.apply(affix);

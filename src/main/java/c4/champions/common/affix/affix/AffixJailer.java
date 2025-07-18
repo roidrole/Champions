@@ -20,6 +20,7 @@
 package c4.champions.common.affix.affix;
 
 import c4.champions.common.ConfigHandler;
+import c4.champions.common.affix.AffixFilter;
 import c4.champions.common.affix.core.AffixBase;
 import c4.champions.common.affix.core.AffixCategory;
 import c4.champions.common.capability.IChampionship;
@@ -27,7 +28,6 @@ import c4.champions.common.entity.EntityJail;
 import c4.champions.common.init.ChampionsRegistry;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
@@ -50,7 +50,7 @@ public class AffixJailer extends AffixBase {
     }
 
     @Override
-    public boolean canApply(EntityLiving entity) {
-        return !(entity instanceof EntityCreeper);
+    public AffixFilter getFilter() {
+        return new AffixFilter(new String[]{"minecraft:creeper"});
     }
 }
